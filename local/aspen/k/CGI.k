@@ -1,16 +1,15 @@
-import("apache");
-import("cstyle");
-import("js4.string");
-import("js4.array");
-import("java2.class");
+import("Syntax.CStyleWhile");
+import("JavaScript.String");
+import("JavaScript.Array");
+import("Java.Class");
 
 load("./decodeURI.k");
 
 class CGI {
 	String[] querylist;
 
-	CGI(Request req) {
-		this.querylist = req.getArgs().split(/&/);
+	CGI(String query) {
+		this.querylist = query.split(/&/);
 	}
 
 	String getParam(String key) {
