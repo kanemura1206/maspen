@@ -1,3 +1,7 @@
+#!/usr/local/bin/minikonoha
+
+import("posix.process");
+
 load("./k/template.k");
 load("./k/CGI.k");
 

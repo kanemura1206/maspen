@@ -1,7 +1,7 @@
 import("Syntax.CStyleWhile");
-import("JavaScript.String");
 import("JavaScript.Array");
-import("Java.Class");
+import("JavaScript.Regexp");
+import("Syntax.JavaStyleClass");
 
 load("./decodeURI.k");
 
@@ -10,17 +10,18 @@ class CGI {
 
 	CGI(String query) {
 		this.querylist = query.split(/&/);
+		this.querylist; // to avoid $Indent bug
 	}
 
-	String getParam(String key) {
+	@Public String getParam(String key) {
 		int i = 0;
-		while(i < querylist.getSize()) {
-			String[] k_v = querylist[i].split(/=/);
-			if(k_v[0].decodeURI() == key) {
-				return k_v[1].decodeURI();
+		while(i < querylist.getlength()) {
+			String[] k_v = querylist.get(i).split(/=/);
+			if(decodeURI(k_v[0]) == key) {
+				return decodeURI(k_v[1]);
 			}
 			i = i + 1;
 		}
-		return null;
+		return "";
 	}
 }

@@ -93,7 +93,7 @@ String Bytes.toString() {
 	Bytes buf = this;
 	int i = 0;
 	String ret = "";
-	while(i < buf.getSize()) {
+	while(i < buf.getlength()) {
 		int c = buf.get(i);
 		//System.p(buf.get(i));
 		ret = ret + String.fromCharCode(buf.get(i));
@@ -103,8 +103,7 @@ String Bytes.toString() {
 	return ret;
 }
 
-@Public String String.decodeURI() {
-	String str = this;
+@Public String decodeURI(String str) {
 	int i = 0;
 	int setcnt;
 	int len = str.getlength();
@@ -158,5 +157,5 @@ String Bytes.toString() {
 		}
 		i = i + 1;
 	}
-	return buf.toString();
+	return new String(buf);
 }
