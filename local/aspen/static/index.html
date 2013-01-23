@@ -25,41 +25,7 @@
 
 <script src="%PATH%static/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-                google.load('visualization', '1', {packages: ['annotatedtimeline']});
-                function drawVisualization() {
-                        var data = new google.visualization.DataTable();
-                        data.addColumn('date', 'Date');
-                        data.addColumn('number', 'code');
-                        data.addColumn('number', 'error');
-                        data.addColumn('number', 'score');
 
-			var jsonData = $.ajax({
-                                url: ROOTURL + "webservice/rest/server.php",
-                                dataType: "json",
-				async: false,
-                                data: {
-                                        wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-                                        wsfunction: "local_exfunctions_get_run_status",
-                                        moodlewsrestformat: "json",
-                                        id: ID,
-                                        userid: USERID
-                                }
-                        }).responseText;
-                        var obj = jQuery.parseJSON(jsonData);
-			var array = [];
-                        for(var i in obj){
-				array.push([new Date(obj[i]['time']*1000), obj[i]['code'], obj[i]['error'], obj[i]['score'] ])
-			}
-                        data.addRows(array);
-
-                        var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
-                                        document.getElementById('visualization'));
-                        annotatedtimeline.draw(data, {'displayAnnotations': true, 'dateFormat': "yyyy.MM.dd 'at' HH:mm:ss", 'fill': 10, 'thickness': 2});
-                }
-
-                google.setOnLoadCallback(drawVisualization);
-</script>
 </head>
 <body>
 
@@ -114,35 +80,23 @@
 			<div class="span12">
 				<p>URL: %URL%</p>
 
-	<!-- Modal -->
-	<div id="modal-status" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
-	    <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	        <h3 id="modal-status">課題情報</h3>
-	    </div>
-	    <div class="modal-body">
-		    <table class="table table-bordered">
-		        <tr align=center>
-		            <td bgcolor="#cccccc">提出ステータス</td>
-		            <td id="status"></td>
-		        </tr>
-		        <tr align=center>
-		            <td bgcolor="#cccccc">提出締切</td>
-		            <td id="duedate"></td>
-		        </tr>
-		        <tr align=center>
-		            <td bgcolor="#cccccc">最終更新日時</td>
-		            <td id="timemodified"></td>
-		        </tr>
-		    </table>
-		    <table class="table">
-		        <pre id="text"></pre>
-		    </table>
-	    </div>
-	</div>
+        <!-- Modal -->
+        <div id="modal-submit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="modal-status"></h3>
+            </div>
+            <div class="modal-body">
+                   <h3>課題を提出しますか？</h3>
+            </div>
+	    <div class="modal-footer">
+		   <button class="btn" data-dismiss="modal" aria-hidden="true">いいえ</button>
+		   <button id="button-submit-yes" class="btn" data-dismiss="modal" aria-hidden="true">はい</button>
+            </div>
+        </div>
 
 	<!-- Modal -->
-	<div id="modal-ranking" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-rankingLabel" aria-hidden="true">
+<!--	<div id="modal-ranking" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-rankingLabel" aria-hidden="true">
 	    <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 	        <h3 id="modal-ranking">Ranking</h3>
@@ -225,36 +179,22 @@
 	      </table>
 	  </div>
 	</div>
-	
-	<!-- Modal -->
-    <div id="modal-graph" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-graphLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="modal-graph">Graph</h3>
-        </div>
-        <div class="modal-body">
-<!--            <div id="visualization" style="width: 520px; height: 400px;"></div> -->
-		<iframe src="static/graph.html?id=%ID%&userid=%USERID%"  width="520" height="390" id="graph">
-		</iframe>
-       </div>
-    </div>
-
+-->
 					<p><button id="button-run" class="btn btn-primary"><i class="icon-play icon-white"></i> Run</button>
 					<button id="button-submit" class="btn btn-success"><i class="icon-share icon-white"></i> Submit</button>
-					<button id="button-status" class="btn"><i class="icon-user"></i> Status</button>
-					<button id="button-ranking" class="btn btn-info"><i class="icon-list"></i> Ranking</button>
-					<button id="button-graph" class="btn btn-danger"><i class="icon-signal"></i> Graph</button></p>
-
+					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?id=%ID%&userid=%USERID%" width="400" height="150" align=right frameborder=0></iframe><p>
 					<div class="row-fluid">
 						<div class="span6">
 							<h3>Source</h3>
 							<textarea id="editor">System.p("hello, world");</textarea>
 						</div>
+						<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?id=%ID%" width="400" height="300"  align=right frameborder=0></iframe>
+					</div>
 						<div class="span6">
 							<h3>Console</h3>
-							<pre id="console" class="prettyprint linenums languague-js"><div id="frame"></div></pre>
+							<pre id="console" class="prettyprint linenums languague-js">  </pre>
 						</div>
-					</div>
+					<!--</div>-->
 				</div>
 			</div>
 			<!--

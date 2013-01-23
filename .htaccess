@@ -1,4 +1,4 @@
-DirectoryIndex index.php index.html index.htm
+DirectoryIndex index.php index.html index.htm index.cgi
 <IfDefine APACHE2>
     AcceptPathInfo on
 </IfDefine>

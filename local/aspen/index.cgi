@@ -14,8 +14,8 @@ void main() {
 	t.set("ROOTURL", "http://konoha.ubicg.ynu.ac.jp/maspen/");
 	t.set("TITLE", "Konoha");
 	t.set("COPY", "Konoha Project");
-	t.set("URL", System.getenv("PATH_INFO"));
-	stdout.println("Content-Type: text/plain; charset=utf-8\n");
+	t.set("URL", System.getenv("QUERY_STRING"));
+	stdout.println("Content-Type: text/html; charset=utf-8\n");
 	stdout.println(t.render());
 }
 

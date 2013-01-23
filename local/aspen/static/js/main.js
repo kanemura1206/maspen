@@ -12,22 +12,17 @@ $(function() {
 	$("#button-run").click(function() {
 		if(myCodeMirror.getValue() != sessionStorage.getItem("previousValue") ||
 				$("#result").text() == String.fromCharCode(160)) {
-			var iframedoc;
-      			function onLoad() {
-        			var iframe = document.createElement("iframe");
-				document.getElementById("frame").appendChild(iframe);
-
-				if (document.all) {
-					iframedoc = iframe.contentWindow.document;
-				} else {
-					iframedoc = iframe.contentDocument;
-				}	
-				iframedoc.writeln('<script src="' + PATH + 'k/k2js.cgi?data="' + myCodeMirror.getValue() +  '"></script>');
-     			}
-
-           		window.onload = onLoad;	
+			$.ajax({
+				type: "GET",
+				url: PATH + "k/k2js.cgi",
+				dataType: "text",
+				data: myCodeMirror.getValue(),
+				success: function(res) {
+					$("#console").text(res);
+					prettyPrint();
+				}
+			});
 			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-
 			$.ajax({
 				type: "GET",
 				url: ROOTURL + "webservice/rest/server.php",
@@ -49,6 +44,12 @@ $(function() {
 	});
 
 	$("#button-submit").click(function() {
+		$("#modal-submit").modal("show");
+                prettyPrint();
+
+	});
+
+	$("#button-submit-yes").click(function() {
 		$.ajax({
 			type: "GET",
 			url: ROOTURL + "webservice/rest/server.php",
@@ -62,39 +63,10 @@ $(function() {
 				text: myCodeMirror.getValue()
 			},
 			success: function(res) {
-				var obj = JSON.parse(res);
-				$("#status").text(obj.status);
-				$("#duedate").text(parse_time(obj.duedate));
-				$("#timemodified").text(parse_time(obj.timemodified));
-				$("#text").text(obj.text);
-				$("#modal-status").modal("show");
 				prettyPrint();
 			}
 		});
-	});
-
-	$("#button-status").click(function() {
-		$.ajax({
-			type: "GET",
-			url: ROOTURL + "webservice/rest/server.php",
-			dataType: "text",
-			data: {
-				wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-				wsfunction: "local_exfunctions_view_assignment",
-				moodlewsrestformat: "json",
-				id: ID,
-				userid: USERID
-			},
-			success: function(res) {
-				var obj = JSON.parse(res);
-				$("#status").text(obj.status);
-				$("#duedate").text(parse_time(obj.duedate));
-				$("#timemodified").text(parse_time(obj.timemodified));
-				$("#text").text(obj.text);
-				$("#modal-status").modal("show");
-				prettyPrint();
-			}
-		});
+		document.getElementById("status-iframe").contentWindow.location.reload();
 	});
 
 	$("#button-ranking").click(function() {
@@ -110,7 +82,7 @@ $(function() {
 				userid: USERID
 			},
 			success: function(res) {
-				var obj = JSON.parse(res);console.log(obj);
+				var obj = JSON.parse(res);
 				$("#run-1-name").text(obj[0].user);
 				$("#run-1-code").text(obj[0].code);
 				$("#run-1-error").text(obj[0].error);
@@ -161,21 +133,21 @@ $(function() {
 		});
 	});
 
-	$("#button-graph").click(function() {
+/*	$("#button-graph").click(function() {
 		document.getElementById("graph").contentWindow.location.reload();		
 		$("#modal-graph").modal("show");
 		prettyPrint();
-	});
+	});*/
 
 	function parse_time(ts) {
 		var d = new Date( ts * 1000 );
 		var year  = d.getFullYear();
 		var month = d.getMonth() + 1;
 		month = ( month   < 10 ) ? '0' + month   : month;
-		var day  = ( d.getDate()   < 10 ) ? '0' + d.getDate()   : d.getHours();
+		var day  = ( d.getDate()    < 10 ) ? '0' + d.getDate()    : d.getDate();
 		var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
 		var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-		var sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+		var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
 		return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
 	}
 });

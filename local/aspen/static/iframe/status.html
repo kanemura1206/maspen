@@ -1,0 +1,82 @@
+<!--
+You are free to copy and use this sample in accordance with the terms of the
+Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="http://konoha.ubicg.ynu.ac.jp/maspen/local/aspen/static/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['table']});
+    
+    function getUrlVars(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++){
+           hash = hashes[i].split('=');
+           vars.push(hash[0]);
+           vars[hash[0]] = hash[1];
+        }
+        return vars;
+    }
+
+    function parse_time(ts) {
+       var d = new Date( ts * 1000 );
+       var year  = d.getFullYear();
+       var month = d.getMonth() + 1;
+       month = ( month   < 10 ) ? '0' + month   : month;
+       var day  = ( d.getDate()    < 10 ) ? '0' + d.getDate()    : d.getDate();
+       var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
+       var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
+       var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+       return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
+    }
+
+
+    function drawVisualization() {
+     var jsonData = $.ajax({
+      	url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+      	dataType: "json",
+      	async: false,
+      	data: {
+      		wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+      		wsfunction: "local_exfunctions_view_assignment",
+      		moodlewsrestformat: "json",
+      		id: getUrlVars()["id"],
+      		userid: getUrlVars()["userid"]
+      	}
+      }).responseText;
+      var obj = jQuery.parseJSON(jsonData);
+      $("#status").text(obj.status);
+      $("#duedate").text(parse_time(obj.duedate));
+      $("#timemodified").text(parse_time(obj.timemodified));
+      $("#text").text(obj.text);
+    }
+
+    google.setOnLoadCallback(drawVisualization);
+    </script>
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+    <div>
+    	<table class="table table-bordered">
+    	   <tr align=center>
+    	      <td bgcolor="#cccccc">提出状況</td>
+    	      <td id="status"></td>
+	   </tr>
+           <tr align=center>
+              <td bgcolor="#cccccc">提出締切</td>
+              <td id="duedate"></td>
+           </tr>
+           <tr align=center>
+              <td bgcolor="#cccccc">最終提出日時</td>
+              <td id="timemodified"></td>
+           </tr>
+	</table>
+    </div>
+  </body>
+</html>
+
