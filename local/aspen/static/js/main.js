@@ -22,6 +22,7 @@ $(function() {
 					prettyPrint();
 				}
 			});
+
 			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
 			$.ajax({
 				type: "GET",

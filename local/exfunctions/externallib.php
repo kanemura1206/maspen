@@ -165,46 +165,27 @@ class local_exfunctions_external extends external_api {
 		return new external_function_parameters(
 				array(
 						'id' => new external_value(PARAM_INT, 'id'),
-						'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
 				)
 		);
 	}
 	
-	public static function get_run_runking($id, $userid = 0) {
+	public static function get_run_runking($id) {
 		global $CFG, $DB;
 	
-		self::validate_parameters(self::get_run_runking_parameters(), array('id'=>$id, 'userid'=>$userid));
+		self::validate_parameters(self::get_run_runking_parameters(), array('id'=>$id));
 	
-		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id ORDER BY score DESC LIMIT 3");
+		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id ORDER BY score DESC");
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
 			$user =  $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->user");
-			$list[$i]['user']  = $user->username;
+			$list[$i]['username']  = $user->username;
+			$list[$i]['userid']= $datum->user;
 			$list[$i]['time']  = $datum->time;
 			$list[$i]['code']  = $datum->code;
 			$list[$i]['error'] = $datum->error;
 			$list[$i]['score'] = $datum->score;
 			$i++;
-		}
-		
-		while ($i < 3){
-			$list[$i]['user']  = NULL;
-			$list[$i]['time']  = NULL;
-			$list[$i]['code']  = NULL;
-			$list[$i]['error'] = NULL;
-			$list[$i]['score'] = NULL;
-			$i++;
-		}
-		
-		if($userid != 0){
-			$data = $DB->get_record_sql("SELECT * FROM mdl_aspen_head WHERE user=$userid AND module=$id");
-			$user =  $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$userid");
-			$list[3]['user']  = $user->username;
-			$list[3]['time']  = $data->time;
-			$list[3]['code']  = $data->code;
-			$list[3]['error'] = $data->error;
-			$list[3]['score'] = $data->score;
 		}
 		
 		return $list;
@@ -214,7 +195,8 @@ class local_exfunctions_external extends external_api {
 		return new external_multiple_structure(
 				new external_single_structure(
 						array(
-								'user'  => new external_value(PARAM_TEXT, 'user'),
+								'username'  => new external_value(PARAM_TEXT, 'username'),
+								'userid'=> new external_value(PARAM_INT, 'userid'),
 								'time'  => new external_value(PARAM_INT, 'time'),
 								'code'  => new external_value(PARAM_INT, 'code'),
 								'error' => new external_value(PARAM_INT, 'error'),

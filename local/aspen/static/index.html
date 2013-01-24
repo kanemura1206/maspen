@@ -78,7 +78,7 @@
 	<div class="container">
 		<div class="row-fluid">
 			<div class="span12">
-				<p>URL: %URL%</p>
+				<!--<p>URL: %URL%</p>-->
 
         <!-- Modal -->
         <div id="modal-submit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
@@ -87,114 +87,27 @@
                 <h3 id="modal-status"></h3>
             </div>
             <div class="modal-body">
-                   <h3>課題を提出しますか？</h3>
+                   <h3>課題を提出します。よろしいですか？</h3>
             </div>
 	    <div class="modal-footer">
 		   <button class="btn" data-dismiss="modal" aria-hidden="true">いいえ</button>
 		   <button id="button-submit-yes" class="btn" data-dismiss="modal" aria-hidden="true">はい</button>
             </div>
         </div>
-
-	<!-- Modal -->
-<!--	<div id="modal-ranking" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-rankingLabel" aria-hidden="true">
-	    <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	        <h3 id="modal-ranking">Ranking</h3>
-	    </div>
-	    <div class="modal-body">
-	        <h4>Run</h4>
-	        <table class="table table-striped">
-	            <thead>
-	                <tr>
-	                  <th>#</th>
-	                  <th>Name</th>
-	                  <th>Code</th>
-	                  <th>Error</th>
-			          <th>Score</th>
-	                </tr>
-	           </thead>
-	           <tbody>
-	               <tr>
-                         <td>1</td>
-			 <td id="run-1-name"></td>
-			 <td id="run-1-code"></td>
-			 <td id="run-1-error"></td>
-			 <td id="run-1-score"></td>
-	               </tr>
-	               <tr>
-	                 <td>2</td>
-	                 <td id="run-2-name"></td>
-	                 <td id="run-2-code"></td>
-	                 <td id="run-2-error"></td>
-			 <td id="run-2-score"></td>
-	               </tr>
-	               <tr>
-	                 <td>3</td>
-	                 <td id="run-3-name"></td>
-	                 <td id="run-3-code"></td>
-	                 <td id="run-3-error"></td>
-			 <td id="run-3-score"></td>
-	               </tr>
-		       <tr>
-                         <td>you</td>
-                         <td id="run-4-name"></td>
-                         <td id="run-4-code"></td>
-                         <td id="run-4-error"></td>
-                         <td id="run-4-score"></td>
-                       </tr>
-	           </tbody>
-	       </table>
-	       <h4>Submit</h4>
-	       <table class="table table-striped">
-	           <thead>
-	               <tr>
-	                 <th>#</th>
-	                 <th>Name</th>
-	                 <th>Time</th>
-	               </tr>
-	           </thead>
-               <tbody>
-	               <tr>
-	                 <td>1</td>
-	                 <td id="submit-1-name"></td>
-	                 <td id="submit-1-time"></td>
-	               </tr>
-	               <tr>
-	                 <td>2</td>
-	                 <td id="submit-2-name"></td>
-	                 <td id="submit-2-time"></td>
-	               </tr>
-	               <tr>
-	                 <td>3</td>
-	                 <td id="submit-3-name"></td>
-	                 <td id="submit-3-time"></td>
-	               </tr>
-		       <tr>
-                         <td>you</td>
-                         <td id="submit-4-name"></td>
-                         <td id="submit-4-time"></td>
-                       </tr>
-
-	           </tbody>
-	      </table>
-	  </div>
-	</div>
--->
 					<p><button id="button-run" class="btn btn-primary"><i class="icon-play icon-white"></i> Run</button>
 					<button id="button-submit" class="btn btn-success"><i class="icon-share icon-white"></i> Submit</button>
-					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?id=%ID%&userid=%USERID%" width="400" height="150" align=right frameborder=0></iframe><p>
-					<div class="row-fluid">
-						<div class="span6">
-							<h3>Source</h3>
-							<textarea id="editor">System.p("hello, world");</textarea>
-						</div>
-						<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?id=%ID%" width="400" height="300"  align=right frameborder=0></iframe>
+					<div class="span6" align=left>
+						<h3>Source</h3>
+						<textarea id="editor">System.p("hello, world");</textarea>
 					</div>
-						<div class="span6">
-							<h3>Console</h3>
-							<pre id="console" class="prettyprint linenums languague-js">  </pre>
-						</div>
-					<!--</div>-->
+					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?id=%ID%&userid=%USERID%" width="400" height="200" align=right frameborder=0></iframe><p>
+
+					<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?id=%ID%&userid=%USERID%" width="400" height="400"  align=right frameborder=0></iframe>
+					<div class="span6" align=left>
+						<h3>Console</h3>
+						<pre id="console" class="prettyprint linenums languague-js">  </pre>
+					</div>
+					
 				</div>
 			</div>
 			<!--

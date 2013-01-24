@@ -7,16 +7,7 @@ import("Type.File");
 import("posix.path");
 import("posix.process");
 
-//import("js4.array");
-//import("js4.string");
-//import("konoha.file");
-
-
 load("./decodeURI.k");
-
-@Public String String.trim() {
-	return StringUtil.trim(this);
-}
 
 void main() {
 	SubProc sp = new SubProc("/bin/mktemp");
@@ -24,7 +15,7 @@ void main() {
  	sp.bg();
  	String filename = sp.communicate("")[0].trim();
  	FILE tmp = new FILE(filename, "w");
-	String input = System.getenv("QUERY_STRING").trim().decodeURI();
+	String input = decodeURI(System.getenv("QUERY_STRING").trim());
  	tmp.print(input);
  	tmp.flush();
  	tmp.close();

@@ -41,19 +41,25 @@
 	 var array = [];
 	 var i = 0;
 	 while(i < obj.length){
-	    array.push([obj[i].user, obj[i].code, obj[i].error]);
+	    var num = array.push([obj[i].username, obj[i].code, obj[i].error]) - 1;
+	    if(obj[i].userid == getUrlVars()["userid"]){
+		var row = num;
+	    }
 	    i++;
 	 }
 
         data.addRows(array);
-
+	data.setProperty(row, 0, 'style', 'background-color: yellow;');
+	data.setProperty(row, 1, 'style', 'background-color: yellow;');
+	data.setProperty(row, 2, 'style', 'background-color: yellow;');
         var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(data, {showRowNumber: true});
+        table.draw(data, {showRowNumber: true, allowHtml: true});
       }
     </script>
   </head>
 
   <body>
+    <h3>Ranking</h3>
     <div id='table_div'></div>
   </body>
 </html>
