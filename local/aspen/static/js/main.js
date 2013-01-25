@@ -10,18 +10,70 @@ $(function() {
 
 	/* button actions */
 	$("#button-run").click(function() {
-		if(myCodeMirror.getValue() != sessionStorage.getItem("previousValue") ||
-				$("#result").text() == String.fromCharCode(160)) {
-			$.ajax({
-				type: "GET",
-				url: PATH + "k/k2js.cgi",
-				dataType: "text",
-				data: myCodeMirror.getValue(),
-				success: function(res) {
-					$("#console").text(res);
-					prettyPrint();
+//		if(myCodeMirror.getValue() != sessionStorage.getItem("previousValue") ||
+//				$("#result").text() == String.fromCharCode(160)) {
+        		var iframedoc;
+      			function onLoad() {
+        			var iframe = document.getElementById("console-iframe");
+        			if (document.all) {
+          				iframedoc = iframe.contentWindow.document;
+        			} else {
+          				iframedoc = iframe.contentDocument;
 				}
-			});
+
+				iframedoc.body.innerHTML = "";
+
+				iframedoc.writeln("<body></body>");
+
+	                      /*  $.ajax({
+        	                        type: "GET",
+                	                url: PATH + "k/k2js.cgi",
+                        	        dataType: "text",
+                                	data: encodeURI(myCodeMirror.getValue()),
+                               		success: function(res) {
+                                        	console.log(res);
+                                        	prettyPrint();
+                                	}
+                        	});*/
+
+	                        $.ajax({
+        	                        type: "GET",
+                	                url: PATH + "k/k2jsC.cgi",
+                        	        dataType: "text",
+                                	data: encodeURI(myCodeMirror.getValue()),
+                               		success: function(res) {
+						if(res.replace(/(^\s+)|(\s+$)/g, "") == ""){
+							iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
+							iframedoc.writeln("<script src ='" + PATH + "k/k2js.cgi?" + encodeURI(myCodeMirror.getValue()) + "'></script>");
+						}
+						else{
+							var array = res.split(/\r\n|\r|\n/);
+							var i;
+							var error = [];
+							var warning = [];
+							for(i = 0; i < array.length; i++){
+								if(array[i] != ""){
+									var obj = array[i].split(/[()]/);
+									if(obj[1] == "error"){
+										error.push(obj[4]);
+									}
+									else if(obj[1] == "warning"){
+										warning.push(obj[4]);
+									}
+								}
+							}
+console.log(JSON.stringify({"error": error, "warning": warning}));
+							iframedoc.body.innerHTML = "<pre>" + res + "</pre>";
+						}
+                                        	prettyPrint();
+                                	}
+                        	});
+
+			}
+      			window.onload = onLoad();
+
+
+
 
 			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
 			$.ajax({
@@ -36,12 +88,12 @@ $(function() {
 					module: ID,
 					code: 10 + Math.floor( Math.random() * 60 ),
 					error: Math.floor( Math.random() * 10 ),
-					text: "hello", 
+					text: myCodeMirror.getValue(), 
 				},
 				success: function(res) {
 				}
 			});
-		}
+//		}
 	});
 
 	$("#button-submit").click(function() {

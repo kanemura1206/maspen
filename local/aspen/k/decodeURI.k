@@ -115,10 +115,11 @@ String Bytes.toString() {
 		String c = str.get(i);
 		//System.p(i);
 		//System.p(c);
-		if (c == "+") {
-			buf.set(setcnt, " ".charCodeAt(0));
-			setcnt = setcnt + 1;
-		} else if (c == "%") {
+		//if (c == "+") {
+		//	buf.set(setcnt, " ".charCodeAt(0));
+		//	setcnt = setcnt + 1;
+		//} else if (c == "%") {
+		if (c == "%") {
 			String hex = "0x";
 			int j = 0;
 			while(j < 2) {

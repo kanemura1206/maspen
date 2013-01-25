@@ -20,13 +20,13 @@ void main() {
  	tmp.flush();
  	tmp.close();
  	sp = new SubProc("/usr/local/bin/minikonoha");
-	//sp.setArgumentList(["-c", filename]);
- 	sp.setArgumentList(["-MJavaScript", filename]);
-	stderr.println("start minikonoha -MJavaScript " + filename);
+	sp.setArgumentList(["-c", filename]);
+ 	//sp.setArgumentList(["-MJavaScript", filename]);
+	stderr.println("compile start minikonoha -MJavaScript " + filename);
  	sp.bg();
  	stdout.println("Content-Type: application/javascript; charset=utf-8\n");
  	stdout.println(sp.communicate("")[0]);
-	stderr.println("end minikonoha -MJavaScript " + filename);
+	stderr.println("compile end minikonoha -MJavaScript " + filename);
 }
 
 main();
