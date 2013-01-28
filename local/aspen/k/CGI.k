@@ -10,7 +10,6 @@ class CGI {
 
 	CGI(String query) {
 		this.querylist = query.split(/&/);
-		this.querylist; // to avoid $Indent bug
 	}
 
 	@Public String getParam(String key) {

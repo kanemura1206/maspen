@@ -11,6 +11,7 @@
 import("Syntax.CStyleWhile");
 import("Type.Bytes");
 import("JavaScript.Regexp");
+import("JavaScript.String");
 //import("js4.string");
 
 //import("cstyle", "while");
