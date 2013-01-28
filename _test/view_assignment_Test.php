@@ -3,11 +3,11 @@ $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
 $id = 2;
 $userid = 3;
-if(0){
-	$token = '863941fa304ba6566e5c392515286aa3';
+if(1){
+	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
 	$id = 2;
-	$userid = 2;
+	$userid = 3;
 }
 $functionname = 'local_exfunctions_view_assignment';
 
@@ -24,6 +24,8 @@ $restformat = ($restformat == 'json')?'&moodlewsrestformat=' . $restformat:'';
 $resp = $curl->post($serverurl . $restformat, $params);
 
 echo "<pre>";
+print_r($serverurl . $restformat);
+echo "\n\n\n";
 print_r($resp);
 echo "\n\n\n";
 var_dump(json_decode($resp));

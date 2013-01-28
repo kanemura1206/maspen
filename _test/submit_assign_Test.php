@@ -9,12 +9,12 @@ if(0){
 	$id = 2;
 	$userid = 2;
 }
-$text = "";
+$text = "helohelo";
 $functionname = 'local_exfunctions_submit_assignment';
 
 $restformat = 'json';
 
-$params = array('id'=> $id, 'userid'=> $userid, 'text' => '$text');
+$params = array('id'=> $id, 'userid'=> $userid, 'text' => $text);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 require_once('./curl.php');

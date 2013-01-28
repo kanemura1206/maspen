@@ -143,20 +143,9 @@ class local_exfunctions_external extends external_api {
 		
 		// Get the assign to render the page
 		$assign->submit_assign($id, $userid, $text);
-		return self::view_assignment('', $id, $userid);
 	}
 
 	public static function submit_assignment_returns() {
-		return new external_single_structure(
-				array(
-						'name'    => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-						'intro'   => new external_value(PARAM_RAW, '', VALUE_OPTIONAL),
-						'status'  => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-						'duedate' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-						'timemodified' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),	
-						'text'    => new external_value(PARAM_RAW, '', VALUE_OPTIONAL)
-				)
-		);
 	}
 
 	//--------------------------------------------------------------------------------------------
@@ -174,7 +163,7 @@ class local_exfunctions_external extends external_api {
 	
 		self::validate_parameters(self::get_run_runking_parameters(), array('id'=>$id));
 	
-		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id ORDER BY score DESC");
+		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id ORDER BY code DESC");
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
@@ -212,40 +201,26 @@ class local_exfunctions_external extends external_api {
 		return new external_function_parameters(
 				array(
 						'id' => new external_value(PARAM_INT, 'id'),
-						'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
 				)
 		);
 	}
 	
-	public static function get_submit_runking($id, $userid=0) {
+	public static function get_submit_runking($id) {
 		global $CFG, $DB;
-	
-		self::validate_parameters(self::get_submit_runking_parameters(), array('id'=>$id, 'userid'=>$userid));
+
+		self::validate_parameters(self::get_submit_runking_parameters(), array('id'=>$id));
 		
 		$data = $DB->get_record_sql("SELECT instance FROM mdl_course_modules WHERE id='$id' AND module=1");
 		$assignment = $data->instance;
-		$data = $DB->get_records_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment ORDER BY timemodified LIMIT 3");
+		$data = $DB->get_records_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment ORDER BY timemodified");
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
 			$user = $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->userid");
 			$list[$i]['username'] = $user->username;
+			$list[$i]['userid']= $datum->userid;
 			$list[$i]['timemodified'] = $datum->timemodified;
 			$i++;
-		}
-		
-		while ($i < 3){
-			$list[$i]['username']  = NULL;
-			$list[$i]['timemodified'] = NULL;
-			$i++;
-		}
-		
-		
-		if($userid != 0){
-			$data = $DB->get_record_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment AND userid=$userid");
-			$user = $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$userid");
-			$list[3]['username'] = $user->username;
-			$list[3]['timemodified'] = $data->timemodified;
 		}
 		
 		return $list;
@@ -256,6 +231,7 @@ class local_exfunctions_external extends external_api {
 				new external_single_structure(
 					array(
 						'username' => new external_value(PARAM_TEXT, 'user name'),
+						'userid'=> new external_value(PARAM_INT, 'userid'),
 						'timemodified' => new external_value(PARAM_INT, 'time modified'),
 					)
 				)
@@ -312,49 +288,48 @@ class local_exfunctions_external extends external_api {
 						'user'   => new external_value(PARAM_INT, 'user'),
 						'module' => new external_value(PARAM_INT, 'module'),
 						'code'   => new external_value(PARAM_INT, 'code'),
-						'error'  => new external_value(PARAM_INT, 'error'),
+						'errors' => new external_value(PARAM_RAW, 'errors'),
 						'text'   => new external_value(PARAM_RAW, 'text')
 				)
 		);
 	}
 	
-	public static function set_run_status($user, $module, $code, $error, $text) {
+	public static function set_run_status($user, $module, $code, $errors, $text) {
 		global $CFG, $DB;
 		
-		self::validate_parameters(self::set_run_status_parameters(), array('user'=>$user, 'module'=>$module, 'code'=>$code, 'error'=>$error, 'text'=>$text));
+		self::validate_parameters(self::set_run_status_parameters(), array('user'=>$user, 'module'=>$module, 'code'=>$code, 'errors'=>$errors, 'text'=>$text));
 
+		$obj = json_decode($errors);
+		$error = count($obj->error) + count($obj->warning);
 		$time = time();
-		$score = $code - $error;
-		$DB->execute("INSERT INTO `mdl_aspen` (`id`, `user`, `module`, `time`, `code`, `error`, `score`) VALUES (NULL, '$user', '$module', '$time', '$code', '$error', '$score')");
-		$obj = $DB->get_record_sql("SELECT id FROM `mdl_aspen_head` WHERE user='$user' AND module='$module'");
-		if($obj == NULL){
-			$DB->execute("INSERT INTO `mdl_aspen_head` (`id`, `user`, `module`, `time`, `code`, `error`, `score`) VALUES (NULL, '$user', '$module', '$time', '$code', '$error', '$score')");
-		}
-		else{
-			$DB->execute("UPDATE `mdl_aspen_head` SET `time`='$time',`code`='$code',`error`='$error', `score`='$score' WHERE `user`=$user AND `module`=$module");
-		}
 		
-		$obj = $DB->get_record_sql("SELECT id FROM `mdl_aspen` WHERE user='$user' AND module='$module' AND time='$time'");
-		$id = $obj->id;
-		echo $DB->execute("INSERT INTO `mdl_aspen_text` (`id`, `text`) VALUES ('?', '?')", array($id, $text));
-		
-		/* 	$data = new stdClass();
+		$data = new stdClass();
 		$data->user   = $user;
 		$data->module = $module;
 		$data->time   = time();
 		$data->code   = $code;
 		$data->error  = $error;
-		$data->score  = $code - $error;var_dump($data);
-		$id = $DB->insert_record('aspen', $data);echo "id = $id\n";
+		$aspen = $DB->insert_record('aspen', $data);
 		
+		$data->aspen = $aspen;
 		$obj = $DB->get_record_sql("SELECT id FROM `mdl_aspen_head` WHERE user='$user' AND module='$module'");
 		if($obj == NULL){
-		$DB->insert_record('aspen_head', $data);
+			$DB->insert_record('aspen_head', $data);
 		}
 		else{
-		$data->id = $obj->id;
-		$DB->update_record('aspen_head', $data);
-		} */
+			$data->id = $obj->id;
+			$DB->update_record('aspen_head', $data);
+		}
+
+		$data = new stdClass();
+		$data->aspen = $aspen;
+		$data->text = $text;
+		$DB->insert_record('aspen_text', $data);
+		
+		$data = new stdClass();
+		$data->aspen = $aspen;
+		$data->errors = $errors;
+		$DB->insert_record('aspen_error', $data);
 	}
 	
 	public static function set_run_status_returns() {

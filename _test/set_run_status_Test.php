@@ -1,22 +1,26 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$user  = 5;
+$user  = 2;
 $module= 2;
-$code  = 45;
-$error = 9;
-$text = 'hogehoge';
+$code  = 22;
+$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
+$text = 'System.p("hello");;';
 
 if(0){
-	$token = '863941fa304ba6566e5c392515286aa3';
+	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$id = 2;
+	$user  = 5;
+	$module= 2;
+	$code  = 45;
+	$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
+	$text = 'hogehoge';
 }
 $functionname = 'local_exfunctions_set_run_status';
 
 $restformat = 'json';
 
-$params = array('user'=> $user, 'module'=>$module, 'code'=>$code, 'error'=>$error, 'text'=>$text);
+$params = array('user'=> $user, 'module'=>$module, 'code'=>$code, 'errors'=>$errors, 'text'=>$text);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 
