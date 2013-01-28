@@ -53,7 +53,12 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
       var obj = jQuery.parseJSON(jsonData);
       $("#status").text(obj.status);
       $("#duedate").text(parse_time(obj.duedate));
-      $("#timemodified").text(parse_time(obj.timemodified));
+      if(obj.timemodified == null){
+      	 $("#timemodified").text("未提出");
+      }
+      else{
+      	$("#timemodified").text(parse_time(obj.timemodified));
+      }
       $("#text").text(obj.text);
     }
 
