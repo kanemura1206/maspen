@@ -2,18 +2,16 @@
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
 $id = 2;
-$userid = 5;
-if(1){
+if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
 	$id = 2;
-	$userid = 3;
 }
-$functionname = 'local_exfunctions_get_run_runking';
+$functionname = 'local_exfunctions_get_runking';
 
 $restformat = 'json';
 
-$params = array('id'=> $id, 'userid'=>$userid);
+$params = array('id'=> $id);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 

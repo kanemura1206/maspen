@@ -1,20 +1,20 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$user  = 2;
+$user  = 4;
 $module= 2;
-$code  = 22;
-$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
-$text = 'System.p("hello");;';
+$code  = 30;
+$errors = '{"error":[],"warning":[]}';
+$text = 'System.p("hoge");';
 
 if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$user  = 5;
+	$user  = 4;
 	$module= 2;
 	$code  = 45;
 	$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
-	$text = 'hogehoge';
+	$text = 'System.p("hello");';
 }
 $functionname = 'local_exfunctions_set_run_status';
 

@@ -150,7 +150,7 @@ class local_exfunctions_external extends external_api {
 
 	//--------------------------------------------------------------------------------------------
 	
-	public static function get_run_runking_parameters() {
+	public static function get_runking_parameters() {
 		return new external_function_parameters(
 				array(
 						'id' => new external_value(PARAM_INT, 'id'),
@@ -158,86 +158,67 @@ class local_exfunctions_external extends external_api {
 		);
 	}
 	
-	public static function get_run_runking($id) {
+	public static function get_runking($id) {
 		global $CFG, $DB;
 	
-		self::validate_parameters(self::get_run_runking_parameters(), array('id'=>$id));
+		self::validate_parameters(self::get_runking_parameters(), array('id'=>$id));
 	
-		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id ORDER BY code DESC");
+		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id");
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
 			$user =  $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->user");
-			$list[$i]['username']  = $user->username;
-			$list[$i]['userid']= $datum->user;
-			$list[$i]['time']  = $datum->time;
-			$list[$i]['code']  = $datum->code;
+			$list[$i]['username'] = $user->username;
+			$list[$i]['userid'] = $datum->user;
+			$list[$i]['time'] = $datum->time;
+			$list[$i]['code'] = $datum->code;
 			$list[$i]['error'] = $datum->error;
-			$list[$i]['score'] = $datum->score;
+			$list[$i]['timemodified'] = Null;
 			$i++;
+		}
+		
+		$data = $DB->get_record_sql("SELECT instance FROM mdl_course_modules WHERE id='$id' AND module=1");
+		$assignment = $data->instance;
+		$data = $DB->get_records_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment");
+		foreach ($data as $datum){
+			$hit = 0;
+			for($j = 0; $j < $i; $j++){
+				if($list[$j]['userid'] == $datum->userid){
+					$list[$j]['timemodified'] = $datum->timemodified;
+					$hit = 1;
+					break;
+				}
+			}
+			if(!$hit){
+				$user = $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->userid");
+				$list[$i]['username'] = $user->username;
+				$list[$i]['userid'] = $datum->userid;
+				$list[$i]['time'] = NULL;
+				$list[$i]['code'] = Null;
+				$list[$i]['error'] = Null;
+				$list[$i]['timemodified'] = $datum->timemodified;
+				$i++;
+			}
 		}
 		
 		return $list;
 	}
 	
-	public static function get_run_runking_returns() {
+	public static function get_runking_returns() {
 		return new external_multiple_structure(
 				new external_single_structure(
 						array(
 								'username'  => new external_value(PARAM_TEXT, 'username'),
 								'userid'=> new external_value(PARAM_INT, 'userid'),
-								'time'  => new external_value(PARAM_INT, 'time'),
-								'code'  => new external_value(PARAM_INT, 'code'),
-								'error' => new external_value(PARAM_INT, 'error'),
-								'score' => new external_value(PARAM_INT, 'score'),
+								'time'  => new external_value(PARAM_INT, 'time', VALUE_OPTIONAL),
+								'code'  => new external_value(PARAM_INT, 'code', VALUE_OPTIONAL),
+								'error' => new external_value(PARAM_INT, 'error', VALUE_OPTIONAL),
+								'timemodified' => new external_value(PARAM_INT, 'timemodified', VALUE_OPTIONAL),
 						)
 				)
 		);
 	}
-	
-	//--------------------------------------------------------------------------------------------
-	
-	public static function get_submit_runking_parameters() {
-		return new external_function_parameters(
-				array(
-						'id' => new external_value(PARAM_INT, 'id'),
-				)
-		);
-	}
-	
-	public static function get_submit_runking($id) {
-		global $CFG, $DB;
 
-		self::validate_parameters(self::get_submit_runking_parameters(), array('id'=>$id));
-		
-		$data = $DB->get_record_sql("SELECT instance FROM mdl_course_modules WHERE id='$id' AND module=1");
-		$assignment = $data->instance;
-		$data = $DB->get_records_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment ORDER BY timemodified");
-		$list = array();
-		$i = 0;
-		foreach ($data as $datum){
-			$user = $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->userid");
-			$list[$i]['username'] = $user->username;
-			$list[$i]['userid']= $datum->userid;
-			$list[$i]['timemodified'] = $datum->timemodified;
-			$i++;
-		}
-		
-		return $list;
-	}
-	
-	public static function get_submit_runking_returns() {
-		return new external_multiple_structure(
-				new external_single_structure(
-					array(
-						'username' => new external_value(PARAM_TEXT, 'user name'),
-						'userid'=> new external_value(PARAM_INT, 'userid'),
-						'timemodified' => new external_value(PARAM_INT, 'time modified'),
-					)
-				)
-		);
-	}
-	
 	//--------------------------------------------------------------------------------------------
 	
 	public static function get_run_status_parameters() {
