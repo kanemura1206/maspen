@@ -21,14 +21,13 @@ class local_exfunctions_external extends external_api {
 	public static function view_assignment_parameters() {
 		return new external_function_parameters(
 				array(
-						'name' => new external_value(PARAM_TEXT, 'assign name', VALUE_DEFAULT, ""),
-						'id'   => new external_value(PARAM_INT, 'id', VALUE_DEFAULT, 0),
+						'id'   => new external_value(PARAM_INT, 'id'),
 						'userid' => new external_value(PARAM_INT, 'userid'),
 				)
 		);
 	}
 
-	public static function view_assignment($name="", $id=0, $userid) {
+	public static function view_assignment($id, $userid) {
 		global $CFG, $USER, $DB;
 
  		require_once("$CFG->dirroot/config.php");
@@ -36,17 +35,7 @@ class local_exfunctions_external extends external_api {
 		require_once("$CFG->libdir/datalib.php");
 		require_once("$CFG->libdir/dml/moodle_database.php");
 
-	    //self::validate_parameters(self::view_assignment_parameters(), array('name'=>$name, 'id'=>$, 'userid'=>$userid));
-
- 		if($name!="" && $id==0){
-			$id = self::get_course_module_id_from_assign_name($name);
-		}
-		elseif ($name=="" && $id!=0){
-			
-		}
-		else{
-			throw new moodle_exception('invalid params');
-		}
+	    self::validate_parameters(self::view_assignment_parameters(), array('id'=>$id, 'userid'=>$userid));
 
 		$cm = get_coursemodule_from_id('assign', $id, 0, false, MUST_EXIST);
 
@@ -63,28 +52,19 @@ class local_exfunctions_external extends external_api {
 		$completion->set_module_viewed($cm);
 		
 		$instance = $assign->get_instance();
- 		$data = $DB->get_record('assign_submission', array('assignment'=>$instance->id, 'userid'=>$userid), '*');
-		$text = $DB->get_record('assignsubmission_onlinetext', array('assignment'=>$instance->id, 'submission'=>$data->id), 'onlinetext');
+ 		$data = $DB->get_record('assign_submission', array('assignment'=>$instance->id, 'userid'=>$userid), 'timemodified');
 
 		$list = array();
-		$list['name']         = $instance->name;
-		$list['intro']        = $instance->intro;
-		$list['status']       = $data->status;
 		$list['duedate']      = $instance->duedate;
 		$list['timemodified'] = $data->timemodified;
-		$list['text']         = $text->onlinetext;
 		return $list;
 	}
 
 	public static function view_assignment_returns() {
 			return new external_single_structure(
 				array(
-						'name'    => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-						'intro'   => new external_value(PARAM_RAW, '', VALUE_OPTIONAL),
-						'status'  => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
 						'duedate' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
 						'timemodified' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),	
-						'text'    => new external_value(PARAM_RAW, '', VALUE_OPTIONAL)
 				)
 		);
 	}
@@ -163,11 +143,11 @@ class local_exfunctions_external extends external_api {
 	
 		self::validate_parameters(self::get_runking_parameters(), array('id'=>$id));
 	
-		$data = $DB->get_records_sql("SELECT * FROM mdl_aspen_head WHERE module=$id");
+		$data = $DB->get_records('aspen_head', array('module'=>$id));
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
-			$user =  $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->user");
+			$user = $DB->get_record('user', array('id'=>$datum->user),'username');
 			$list[$i]['username'] = $user->username;
 			$list[$i]['userid'] = $datum->user;
 			$list[$i]['time'] = $datum->time;
@@ -177,9 +157,9 @@ class local_exfunctions_external extends external_api {
 			$i++;
 		}
 		
-		$data = $DB->get_record_sql("SELECT instance FROM mdl_course_modules WHERE id='$id' AND module=1");
+		$data = $DB->get_record('course_modules', array('id'=>$id, 'module'=>1), 'instance');
 		$assignment = $data->instance;
-		$data = $DB->get_records_sql("SELECT * FROM mdl_assign_submission WHERE assignment=$assignment");
+		$data = $DB->get_records('assign_submission', array('assignment'=>$assignment));
 		foreach ($data as $datum){
 			$hit = 0;
 			for($j = 0; $j < $i; $j++){
@@ -190,7 +170,7 @@ class local_exfunctions_external extends external_api {
 				}
 			}
 			if(!$hit){
-				$user = $DB->get_record_sql("SELECT username FROM mdl_user WHERE id=$datum->userid");
+				$data = $DB->get_record('user', array('id'=>$datum->userid),'*');
 				$list[$i]['username'] = $user->username;
 				$list[$i]['userid'] = $datum->userid;
 				$list[$i]['time'] = NULL;
@@ -235,14 +215,13 @@ class local_exfunctions_external extends external_api {
 
 		self::validate_parameters(self::get_run_status_parameters(), array('userid'=>$userid, 'id'=>$id));
 
-		$data = $DB->get_records_sql("SELECT * FROM `mdl_aspen` WHERE user='$userid' AND module='$id'");
+		$data = $DB->get_records('aspen', array('user'=>$userid, 'module'=>$id));
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
 			$list[$i]['time'] = $datum->time;
 			$list[$i]['code'] = $datum->code;
 			$list[$i]['error'] = $datum->error;
-			$list[$i]['score'] = $datum->score;
 			$i++;
 		}
 		return $list;
@@ -255,7 +234,6 @@ class local_exfunctions_external extends external_api {
 								'time'  => new external_value(PARAM_INT, 'time'),
 								'code'  => new external_value(PARAM_INT, 'code'),
 								'error' => new external_value(PARAM_INT, 'error'),
-								'score' => new external_value(PARAM_INT, 'score'),
 						)
 				)
 		);
@@ -293,7 +271,7 @@ class local_exfunctions_external extends external_api {
 		$aspen = $DB->insert_record('aspen', $data);
 		
 		$data->aspen = $aspen;
-		$obj = $DB->get_record_sql("SELECT id FROM `mdl_aspen_head` WHERE user='$user' AND module='$module'");
+		$obj = $DB->get_record('aspen_head', array('user'=>$user, 'module'=>$module), 'id');
 		if($obj == NULL){
 			$DB->insert_record('aspen_head', $data);
 		}
@@ -314,34 +292,6 @@ class local_exfunctions_external extends external_api {
 	}
 	
 	public static function set_run_status_returns() {
-	}
-	
-	//--------------------------------------------------------------------------------------------
-
-	function get_course_module_id_from_assign_name($name) {
-		global $CFG, $DB;
-		require_once("$CFG->libdir/dml/moodle_database.php");
-		$assign = $DB->get_record_sql("SELECT * FROM mdl_assign WHERE name='$name'");
-		$instance = $assign->id;
-		$course_modules = $DB->get_record_sql("SELECT * FROM mdl_course_modules WHERE module=1 AND instance=$instance");
-		$id = $course_modules->id;
-		return $id;
-	}
-	
-	//--------------------------------------------------------------------------------------------
-	
-	function decode_timestamp($timestamp) {
-		$list = array();
-		$time = getdate($timestamp);
-		$list['year']  = $time['year'];
-		$list['month'] = sprintf('%02d', $time['mon']);
-		$list['day']   = sprintf('%02d', $time['mday']);
-		$list['hours'] = sprintf('%02d', $time['hours']);
-		$list['minutes'] = sprintf('%02d', $time['minutes']);
-		$list['seconds'] = sprintf('%02d', $time['seconds']);
-		$list['weekday'] = $time['wday'];
-
-		return $list;
 	}
 }
 

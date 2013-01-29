@@ -2,8 +2,8 @@
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
 $id = 2;
-$userid = 3;
-if(1){
+$userid = 5;
+if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
 	$id = 2;
