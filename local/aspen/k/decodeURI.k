@@ -94,13 +94,17 @@ String Bytes.toString() {
 	Bytes buf = this;
 	int i = 0;
 	String ret = "";
-	while(i < buf.getlength()) {
+	while(i < buf.getSize()) {
 		int c = buf.get(i);
+		if(c == 0) {
+			break;
+		}
 		//System.p(buf.get(i));
 		ret = ret + String.fromCharCode(buf.get(i));
 		//System.p(ret);
 		i = i + 1;
 	}
+	ret = ret + " ";
 	return ret;
 }
 
@@ -159,5 +163,5 @@ String Bytes.toString() {
 		}
 		i = i + 1;
 	}
-	return new String(buf);
+	return buf.toString();
 }
