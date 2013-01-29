@@ -163,5 +163,6 @@ String Bytes.toString() {
 		}
 		i = i + 1;
 	}
-	return buf.toString();
+	//return buf.toString();
+	return new String(buf);
 }

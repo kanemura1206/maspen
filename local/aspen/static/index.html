@@ -78,16 +78,16 @@
 	<div class="container">
 		<div class="row-fluid">
 			<div class="span12">
-				<p>URL: %URL%</p>
+				<!--<p>URL: %URL%, ID: %ID%, USERID: %USERID%</p>-->
 
         <!-- Modal -->
         <div id="modal-submit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="modal-status"></h3>
+                <h3>課題を提出します。よろしいですか？</h3>
             </div>
             <div class="modal-body">
-                   <h3>課題を提出します。よろしいですか？</h3>
+                   <pre><p id="submit-text"></p></pre>
             </div>
 	    <div class="modal-footer">
 		   <button class="btn" data-dismiss="modal" aria-hidden="true">いいえ</button>
