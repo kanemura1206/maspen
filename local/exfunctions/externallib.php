@@ -150,10 +150,9 @@ class local_exfunctions_external extends external_api {
 			$user = $DB->get_record('user', array('id'=>$datum->user),'username');
 			$list[$i]['username'] = $user->username;
 			$list[$i]['userid'] = $datum->user;
-			$list[$i]['time'] = $datum->time;
 			$list[$i]['code'] = $datum->code;
 			$list[$i]['error'] = $datum->error;
-			$list[$i]['timemodified'] = Null;
+			$list[$i]['timemodified'] = NULL;
 			$i++;
 		}
 		
@@ -170,12 +169,11 @@ class local_exfunctions_external extends external_api {
 				}
 			}
 			if(!$hit){
-				$data = $DB->get_record('user', array('id'=>$datum->userid),'*');
-				$list[$i]['username'] = $user->username;
+				$obj = $DB->get_record('user', array('id'=>$datum->userid),'*');
+				$list[$i]['username'] = $obj->username;
 				$list[$i]['userid'] = $datum->userid;
-				$list[$i]['time'] = NULL;
-				$list[$i]['code'] = Null;
-				$list[$i]['error'] = Null;
+				$list[$i]['code'] = 0;
+				$list[$i]['error'] = 0;
 				$list[$i]['timemodified'] = $datum->timemodified;
 				$i++;
 			}
@@ -190,7 +188,6 @@ class local_exfunctions_external extends external_api {
 						array(
 								'username'  => new external_value(PARAM_TEXT, 'username'),
 								'userid'=> new external_value(PARAM_INT, 'userid'),
-								'time'  => new external_value(PARAM_INT, 'time', VALUE_OPTIONAL),
 								'code'  => new external_value(PARAM_INT, 'code', VALUE_OPTIONAL),
 								'error' => new external_value(PARAM_INT, 'error', VALUE_OPTIONAL),
 								'timemodified' => new external_value(PARAM_INT, 'timemodified', VALUE_OPTIONAL),
