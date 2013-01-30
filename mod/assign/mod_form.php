@@ -58,7 +58,7 @@ class mod_assign_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $this->add_intro_editor(true, get_string('description', 'assign'));
+        $this->add_intro_editor(false, get_string('description', 'assign'));
 
         $ctx = null;
         if ($this->current && $this->current->coursemodule) {

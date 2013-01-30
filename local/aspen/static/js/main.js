@@ -75,7 +75,7 @@ $(function() {
 								moodlewsrestformat: "json",
 								user: USERID,
 								module: ID,
-								code: 10 + Math.floor( Math.random() * 60 ),
+								code: myCodeMirror.lineCount(),
 								errors: JSON.stringify({"error": error, "warning": warning}),
 								text: myCodeMirror.getValue(), 
 							},
@@ -88,6 +88,7 @@ $(function() {
 			}
       			window.onload = onLoad();
 			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+			document.getElementById("ranking-iframe").contentWindow.location.reload();
                         prettyPrint();
 //		}
 	});
