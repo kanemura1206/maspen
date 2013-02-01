@@ -5,7 +5,11 @@ $(function() {
 	}, {
 		value: $("#editor").val(),
 		mode: "text/x-konoha",
-		lineNumbers: true
+		lineNumbers: true,
+		onCursorActivity: function(){
+					myCodeMirror.setLineClass(myCodeMirror.getCursor().line, null);
+				}
+
 	});
 
 	/* button actions */
@@ -25,7 +29,7 @@ $(function() {
 
 				iframedoc.writeln("<body></body>");
 
-	                      /*  $.ajax({
+	                 /*       $.ajax({
         	                        type: "GET",
                 	                url: PATH + "k/k2js.cgi",
                         	        dataType: "text",
@@ -38,31 +42,40 @@ $(function() {
 
 	                        $.ajax({
         	                        type: "GET",
-                	                url: PATH + "k/k2jsC.cgi",
+                	                url: PATH + "k/k2js.cgi",
                         	        dataType: "text",
                                 	data: encodeURI(myCodeMirror.getValue()),
                                		success: function(res) {
-						var error = [];
-						var warning = [];
-						if(res.replace(/(^\s+)|(\s+$)/g, "") == ""){
-							iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
-							iframedoc.writeln("<script src ='" + PATH + "k/k2js.cgi?" + encodeURI(myCodeMirror.getValue()) + "'></script>");
-						}
-						else{
-							var array = res.split(/\r\n|\r|\n/);
-							var i;
-							for(i = 0; i < array.length; i++){
-								if(array[i] != ""){
-									var obj = array[i].split(/[()]/);
-									if(obj[1] == "error"){
-										error.push(obj[4]);
-									}
-									else if(obj[1] == "warning"){
-										warning.push(obj[4]);
-									}
+						var array = res.split(/\r\n|\r|\n/);
+						var i, text = "", str = "", error = [], warning = [];
+						for(i = 0; i < array.length; i++){
+							if(array[i].substring(0, 4) == " - ("){
+								array[i] = array[i].replace(/js\.......:/g, 'at line ');
+								var obj = array[i].split(/[()]/);
+								if(obj[1] == "error"){
+									error.push("(" + obj[3]  + ")" + obj[4]);
+									
 								}
+								else if(obj[1] == "warning"){
+									warning.push("(" + obj[3] + ")" + obj[4]);
+								}
+								str += array[i] + "<br>";
+								myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
 							}
-							iframedoc.body.innerHTML = "<pre>" + res + "</pre>";
+							else{
+								text += array[i] + "\n";
+							}
+						}
+						iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
+						iframedoc.writeln("<script>" + text + "</script>");
+						iframedoc.body.innerHTML += str;
+
+						var blank = 0;
+						array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
+						for(i = 0; i < array.length; i++){
+							if(array[i].trim() == ""){
+								blank++;
+							}
 						}
 
 						$.ajax({
@@ -75,7 +88,7 @@ $(function() {
 								moodlewsrestformat: "json",
 								user: USERID,
 								module: ID,
-								code: myCodeMirror.lineCount(),
+								code: myCodeMirror.lineCount() - blank,
 								errors: JSON.stringify({"error": error, "warning": warning}),
 								text: myCodeMirror.getValue(), 
 							},
@@ -84,18 +97,73 @@ $(function() {
 						});
                                 	}
                         	});
-
 			}
       			window.onload = onLoad();
 			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-			document.getElementById("ranking-iframe").contentWindow.location.reload();
                         prettyPrint();
 //		}
 	});
 
+	$("#button-compile").click(function() {
+        	var iframedoc;
+      		function onLoad() {
+        		var iframe = document.getElementById("console-iframe");
+        		if (document.all) {
+          			iframedoc = iframe.contentWindow.document;
+        		} else {
+          			iframedoc = iframe.contentDocument;
+			}
+
+			iframedoc.body.innerHTML = "";
+
+			iframedoc.writeln("<body></body>");
+
+	                $.ajax({
+        	                type: "GET",
+                	        url: PATH + "k/k2jsC.cgi",
+                        	dataType: "text",
+                                data: encodeURI(myCodeMirror.getValue()),
+                           	success: function(res) {
+					var i;
+					var array = res.split(/\r\n|\r|\n/);
+					for(i = 0; i < array.length; i++){
+						if(array[i] != "" && array[i].substring(0, 6) != " - (js"){
+							var obj = array[i].split(/[()]/);
+							myCodeMirror.setLineClass(obj[3].substring(10)-1, "errorLine");
+						}
+					}
+					res = res.replace(/\r\n|\r|\n/g, "<br>").replace(/js\.......:/g, 'at line ');
+					iframedoc.body.innerHTML += res;
+                               	}
+                       	});
+		}
+
+      		window.onload = onLoad();
+		sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+        	prettyPrint();
+	});
+
 	$("#button-submit").click(function() {
-		$("#submit-text").text(myCodeMirror.getValue());
-		$("#modal-submit").modal("show");
+	     	var jsonData = $.ajax({
+        		url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+		        dataType: "json",
+		        async: false,
+		        data: {
+                	wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+		                wsfunction: "local_exfunctions_view_assignment",
+		                moodlewsrestformat: "json",
+	  	                id: ID,
+	  	                userid: USERID
+	  	        }
+	        }).responseText;
+	        var obj = jQuery.parseJSON(jsonData);
+		if(Math.round(new Date().getTime() / 1000) < obj.duedate){
+			$("#submit-text").text(myCodeMirror.getValue());
+			$("#modal-submit").modal("show");
+		}
+		else{
+			$("#modal-submit-over").modal("show");
+		}
                 prettyPrint();
 
 	});

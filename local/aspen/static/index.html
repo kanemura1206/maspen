@@ -94,8 +94,20 @@
 		   <button id="button-submit-yes" class="btn" data-dismiss="modal" aria-hidden="true">はい</button>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div id="modal-submit-over" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                   <h3>提出締切日時を過ぎています。</h3>
+            </div>
+        </div>
 					<p><button id="button-run" class="btn btn-primary"><i class="icon-play icon-white"></i> Run</button>
 					<button id="button-submit" class="btn btn-success"><i class="icon-share icon-white"></i> Submit</button>
+					<button id="button-compile" class="btn btn-info"><i class="icon-question-sign icon-white"></i> Compile</button></p>
+					
 					<div class="span6" align=left>
 						<h3>Source</h3>
 						<textarea id="editor">System.p("hello, world");</textarea>
