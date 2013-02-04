@@ -25,17 +25,15 @@
 	 if(ts == null){
 	    return "Not submitted";
 	 }
-	 else{
-            var d = new Date( ts * 1000 );
-            var year  = d.getFullYear();
-            var month = d.getMonth() + 1;
-            month = ( month   < 10 ) ? '0' + month   : month;
-            var day  = ( d.getDate()    < 10 ) ? '0' + d.getDate()    : d.getDate();
-            var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
-            var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-            var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-            return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
-	 }
+         var d = new Date( ts * 1000 );
+         var year  = d.getFullYear();
+         var month = d.getMonth() + 1;
+         month = ( month   < 10 ) ? '0' + month   : month;
+         var day  = ( d.getDate()    < 10 ) ? '0' + d.getDate()    : d.getDate();
+         var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
+         var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
+         var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+         return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
       }
 
       function drawTable() {

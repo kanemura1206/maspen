@@ -25,6 +25,9 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
     }
 
     function parse_time(ts) {
+       if(ts == 0){
+         return "";
+       }
        var d = new Date( ts * 1000 );
        var year  = d.getFullYear();
        var month = d.getMonth() + 1;
