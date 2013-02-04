@@ -61,7 +61,7 @@ class local_exfunctions_external extends external_api {
 	}
 
 	public static function view_assignment_returns() {
-			return new external_single_structure(
+		return new external_single_structure(
 				array(
 						'duedate' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
 						'timemodified' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),	
@@ -290,5 +290,31 @@ class local_exfunctions_external extends external_api {
 	
 	public static function set_run_status_returns() {
 	}
+	
+	//--------------------------------------------------------------------------------------------
+	
+	public static function get_head_text_parameters() {
+		return new external_function_parameters(
+				array(
+						'user' => new external_value(PARAM_INT, 'user'),
+						'module' => new external_value(PARAM_INT, 'module'),
+				)
+		);
+	}
+	
+	public static function get_head_text($user, $module) {
+		global $CFG, $DB;
+
+		self::validate_parameters(self::get_head_text_parameters(), array('user'=>$user, 'module'=>$module));
+	
+		$data = $DB->get_record('aspen_head', array('user'=>$user, 'module'=>$module), 'aspen');
+		$data = $DB->get_record('aspen_text', array('aspen'=>$data->aspen), 'text');
+		return $data->text;
+	}
+	
+	public static function get_head_text_returns() {
+		return new external_value(PARAM_RAW, 'text');
+	}
+	
 }
 

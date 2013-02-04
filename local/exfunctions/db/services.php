@@ -58,6 +58,13 @@ $functions = array(
 				'description' => 'set_run_status',
 				'type'        => 'write',
 		),
+		'local_exfunctions_get_head_text' => array(
+				'classname'   => 'local_exfunctions_external',
+				'methodname'  => 'get_head_text',
+				'classpath'   => 'local/exfunctions/externallib.php',
+				'description' => 'get_head_text',
+				'type'        => 'read',
+		),
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
@@ -68,7 +75,8 @@ $services = array(
 						'local_exfunctions_submit_assignment',
 						'local_exfunctions_get_runking',
 						'local_exfunctions_get_run_status',
-						'local_exfunctions_set_run_status'),
+						'local_exfunctions_set_run_status',
+						'local_exfunctions_get_head_text',),
 				'requiredcapability' =>'',
 				'restrictedusers' => 0,
 				'enabled'=>1,
