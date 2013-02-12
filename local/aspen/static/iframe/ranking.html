@@ -9,7 +9,7 @@
       google.load('visualization', '1', {packages:['table']});
       google.setOnLoadCallback(drawTable);
       setInterval(drawTable, 10000);
-      var id = getUrlVars()["id"];
+      var cmid = getUrlVars()["cmid"];
       var userid = getUrlVars()["userid"];
 
       function getUrlVars(){
@@ -24,9 +24,9 @@
       }
 
       function parse_time(ts) {
-	 if(ts == null){
-	    return "Not submitted";
-	 }
+	     if(ts == null){
+	        adreturn "Not submitted";
+	     }
          var d = new Date( ts * 1000 );
          var year  = d.getFullYear();
          var month = d.getMonth() + 1;
@@ -46,7 +46,7 @@
         data.addColumn('string', 'Name');
         data.addColumn('number', 'Lines Of Code');
         data.addColumn('number', 'Error');
-	data.addColumn('string', 'Submission');
+	    data.addColumn('string', 'Submission');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
@@ -56,39 +56,39 @@
                 wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
                 wsfunction: "local_exfunctions_get_runking",
                 moodlewsrestformat: "json",
-                id: id,
+                cmid: cmid,
            }
-         }).responseText;
-         var obj = jQuery.parseJSON(jsonData);
-	 var array = [];
-	 var i = 0, row = -1;
-	 while(i < obj.length){
-	    var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].timemodified)]) - 1;
-	    if(obj[i].userid == userid){
-		row = num;
+        }).responseText;
+        var obj = jQuery.parseJSON(jsonData);
+	    var array = [];
+	    var i = 0, row = -1;
+	    while(i < obj.length){
+	    	   var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].timemodified)]) - 1;
+	    	   if(obj[i].userid == userid){
+	    		     row = num;
+	    	   }
+	    	   i++;
 	    }
-	    i++;
-	 }
 
         data.addRows(array);
-	if(row != -1){
-		data.setProperty(row, 0, 'style', 'background-color: yellow;');
-		data.setProperty(row, 1, 'style', 'background-color: yellow;');
-		data.setProperty(row, 2, 'style', 'background-color: yellow;');
-		data.setProperty(row, 3, 'style', 'background-color: yellow;');
-	}
-	data.sort([{column: 3}, {column: 1, desc: true}]);
+		if(row != -1){
+			data.setProperty(row, 0, 'style', 'background-color: yellow;');
+			data.setProperty(row, 1, 'style', 'background-color: yellow;');
+			data.setProperty(row, 2, 'style', 'background-color: yellow;');
+			data.setProperty(row, 3, 'style', 'background-color: yellow;');
+		}
+	    data.sort([{column: 3}, {column: 1, desc: true}]);
         table = new google.visualization.Table(document.getElementById('table_div'));
         table.draw(data, {showRowNumber: true, allowHtml: true});
-	google.visualization.events.addListener(table, 'select', selectHandler);
+	    google.visualization.events.addListener(table, 'select', selectHandler);
       }
 
       function selectHandler() {
           var selection = table.getSelection();
-	  for (var i = 0; i < selection.length; i++) {
+	      for (var i = 0; i < selection.length; i++) {
               var item = selection[i];
               var str = data.getFormattedValue(item.row, 0);
-	      $(window.parent.document).find('#modal-submit').modal("show");
+	          $(window.parent.document).find('#modal-submit').modal("show");
           }
       }
     </script>

@@ -1,7 +1,7 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$id = 2;
+$cmid = 2;
 $userid = 5;
 if(0){
 	$token = '863941fa304ba6566e5c392515286aa3';
@@ -9,12 +9,12 @@ if(0){
 	$id = 2;
 	$userid = 2;
 }
-$text = "helohelo";
+$text = "Hello, world!";
 $functionname = 'local_exfunctions_submit_assignment';
 
 $restformat = 'json';
 
-$params = array('id'=> $id, 'userid'=> $userid, 'text' => $text);
+$params = array('cmid'=> $cmid, 'userid'=> $userid, 'text' => $text);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 require_once('./curl.php');

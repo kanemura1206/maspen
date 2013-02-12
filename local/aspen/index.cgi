@@ -8,7 +8,7 @@ load("./k/CGI.k");
 void main() {
 	Template t = Template.getTemplate("index.html");
 	CGI cgi = new CGI(System.getenv("QUERY_STRING"));
-	t.set("ID", cgi.getParam("id"));
+	t.set("CMID", cgi.getParam("cmid"));
 	t.set("USERID", cgi.getParam("userid"));
 	t.set("PATH", "http://konoha.ubicg.ynu.ac.jp/maspen/local/aspen/");
 	t.set("ROOTURL", "http://konoha.ubicg.ynu.ac.jp/maspen/");

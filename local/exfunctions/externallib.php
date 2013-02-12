@@ -21,13 +21,13 @@ class local_exfunctions_external extends external_api {
 	public static function view_assignment_parameters() {
 		return new external_function_parameters(
 				array(
-						'id'   => new external_value(PARAM_INT, 'id'),
+						'cmid'   => new external_value(PARAM_INT, 'course module id'),
 						'userid' => new external_value(PARAM_INT, 'userid'),
 				)
 		);
 	}
 
-	public static function view_assignment($id, $userid) {
+	public static function view_assignment($cmid, $userid) {
 		global $CFG, $USER, $DB;
 
  		require_once("$CFG->dirroot/config.php");
@@ -35,9 +35,9 @@ class local_exfunctions_external extends external_api {
 		require_once("$CFG->libdir/datalib.php");
 		require_once("$CFG->libdir/dml/moodle_database.php");
 
-	    self::validate_parameters(self::view_assignment_parameters(), array('id'=>$id, 'userid'=>$userid));
+	    self::validate_parameters(self::view_assignment_parameters(), array('cmid'=>$cmid, 'userid'=>$userid));
 
-		$cm = get_coursemodule_from_id('assign', $id, 0, false, MUST_EXIST);
+		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
 
 		$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
@@ -75,14 +75,14 @@ class local_exfunctions_external extends external_api {
 		return new external_function_parameters(
 				array(
 						'name'   => new external_value(PARAM_RAW, 'assign name', VALUE_DEFAULT, ""),
-						'id'     => new external_value(PARAM_INT, 'id', VALUE_DEFAULT, 0),
+						'cmid'     => new external_value(PARAM_INT, 'course module id', VALUE_DEFAULT, 0),
 						'userid' => new external_value(PARAM_INT, 'userid'),
 						'text'   => new external_value(PARAM_RAW, 'text')
 				)
 		);
 	}
 
-	public static function submit_assignment($name="", $id=0, $userid, $text) {
+	public static function submit_assignment($name="", $cmid=0, $userid, $text) {
 		global $CFG, $DB;
 		/** config.php */
 		require_once("$CFG->dirroot/config.php");
@@ -90,21 +90,21 @@ class local_exfunctions_external extends external_api {
 		require_once("$CFG->dirroot/mod/assign/locallib.php");
 		require_once("$CFG->dirroot/mod/assign/lib.php");
 		
-		//self::validate_parameters(self::submit_assignment_parameters(), array('name'=>$name, 'id'=>$id, 'text'=>$text));
-		if($name!="" && $id==0){
-			$id = (int)self::get_course_module_id_from_assign_name($name);
+		//self::validate_parameters(self::submit_assignment_parameters(), array('name'=>$name, 'cmid'=>$cmid, 'text'=>$text));
+		if($name!="" && $cmid==0){
+			$cmid = (int)self::get_course_module_id_from_assign_name($name);
 		}
-		elseif ($name=="" && $id!=0){
+		elseif ($name=="" && $cmid!=0){
 			
 		}
 		else{
 			throw new moodle_exception('invalid_parameter_exception');
 		}
 
-		//	$url = new moodle_url('/mod/assign/view.php', array('id' => $id)); // Base URL
+		//	$url = new moodle_url('/mod/assign/view.php', array('cmid' => $cmid)); // Base URL
 
 		// get the request parameters
-		$cm = get_coursemodule_from_id('assign', $id, 0, false, MUST_EXIST);
+		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
 
 		$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
@@ -122,7 +122,7 @@ class local_exfunctions_external extends external_api {
 		$completion->set_module_viewed($cm);
 		
 		// Get the assign to render the page
-		$assign->submit_assign($id, $userid, $text);
+		$assign->submit_assign($cmid, $userid, $text);
 	}
 
 	public static function submit_assignment_returns() {
@@ -133,17 +133,17 @@ class local_exfunctions_external extends external_api {
 	public static function get_runking_parameters() {
 		return new external_function_parameters(
 				array(
-						'id' => new external_value(PARAM_INT, 'id'),
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
 				)
 		);
 	}
 	
-	public static function get_runking($id) {
+	public static function get_runking($cmid) {
 		global $CFG, $DB;
 	
-		self::validate_parameters(self::get_runking_parameters(), array('id'=>$id));
+		self::validate_parameters(self::get_runking_parameters(), array('cmid'=>$cmid));
 	
-		$data = $DB->get_records('aspen_head', array('module'=>$id));
+		$data = $DB->get_records('aspen_head', array('cmid'=>$cmid));
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
@@ -156,7 +156,7 @@ class local_exfunctions_external extends external_api {
 			$i++;
 		}
 		
-		$data = $DB->get_record('course_modules', array('id'=>$id, 'module'=>1), 'instance');
+		$data = $DB->get_record('course_modules', array('id'=>$cmid, 'module'=>1), 'instance');
 		$assignment = $data->instance;
 		$data = $DB->get_records('assign_submission', array('assignment'=>$assignment));
 		foreach ($data as $datum){
@@ -202,17 +202,17 @@ class local_exfunctions_external extends external_api {
 		return new external_function_parameters(
 				array(
 						'userid' => new external_value(PARAM_INT, 'userid'),
-						'id' => new external_value(PARAM_INT, 'id'),
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
 				)
 		);
 	}
 	
-	public static function get_run_status($userid, $id) {
+	public static function get_run_status($userid, $cmid) {
 		global $CFG, $DB;
 
-		self::validate_parameters(self::get_run_status_parameters(), array('userid'=>$userid, 'id'=>$id));
+		self::validate_parameters(self::get_run_status_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 
-		$data = $DB->get_records('aspen', array('user'=>$userid, 'module'=>$id));
+		$data = $DB->get_records('aspen', array('userid'=>$userid, 'cmid'=>$cmid));
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
@@ -241,8 +241,8 @@ class local_exfunctions_external extends external_api {
 	public static function set_run_status_parameters() {
 		return new external_function_parameters(
 				array(
-						'user'   => new external_value(PARAM_INT, 'user'),
-						'module' => new external_value(PARAM_INT, 'module'),
+						'userid'   => new external_value(PARAM_INT, 'userid'),
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
 						'code'   => new external_value(PARAM_INT, 'code'),
 						'errors' => new external_value(PARAM_RAW, 'errors'),
 						'text'   => new external_value(PARAM_RAW, 'text')
@@ -250,25 +250,25 @@ class local_exfunctions_external extends external_api {
 		);
 	}
 	
-	public static function set_run_status($user, $module, $code, $errors, $text) {
+	public static function set_run_status($userid, $cmid, $code, $errors, $text) {
 		global $CFG, $DB;
 		
-		self::validate_parameters(self::set_run_status_parameters(), array('user'=>$user, 'module'=>$module, 'code'=>$code, 'errors'=>$errors, 'text'=>$text));
+		self::validate_parameters(self::set_run_status_parameters(), array('userid'=>$userid, 'cmid'=>$cmid, 'code'=>$code, 'errors'=>$errors, 'text'=>$text));
 
 		$obj = json_decode($errors);
 		$error = count($obj->error) + count($obj->warning);
 		$time = time();
 		
 		$data = new stdClass();
-		$data->user   = $user;
-		$data->module = $module;
+		$data->userid   = $userid;
+		$data->cmid = $cmid;
 		$data->time   = time();
 		$data->code   = $code;
 		$data->error  = $error;
 		$aspen = $DB->insert_record('aspen', $data);
 		
 		$data->aspen = $aspen;
-		$obj = $DB->get_record('aspen_head', array('user'=>$user, 'module'=>$module), 'id');
+		$obj = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
 		if($obj == NULL){
 			$DB->insert_record('aspen_head', $data);
 		}
@@ -296,18 +296,18 @@ class local_exfunctions_external extends external_api {
 	public static function get_head_text_parameters() {
 		return new external_function_parameters(
 				array(
-						'user' => new external_value(PARAM_INT, 'user'),
-						'module' => new external_value(PARAM_INT, 'module'),
+						'userid' => new external_value(PARAM_INT, 'userid'),
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
 				)
 		);
 	}
 	
-	public static function get_head_text($user, $module) {
+	public static function get_head_text($userid, $cmid) {
 		global $CFG, $DB;
 
-		self::validate_parameters(self::get_head_text_parameters(), array('user'=>$user, 'module'=>$module));
+		self::validate_parameters(self::get_head_text_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 	
-		$data = $DB->get_record('aspen_head', array('user'=>$user, 'module'=>$module), 'aspen');
+		$data = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'aspen');
 		$data = $DB->get_record('aspen_text', array('aspen'=>$data->aspen), 'text');
 		return $data->text;
 	}
@@ -315,6 +315,33 @@ class local_exfunctions_external extends external_api {
 	public static function get_head_text_returns() {
 		return new external_value(PARAM_RAW, 'text');
 	}
+
+	//--------------------------------------------------------------------------------------------
 	
+	public static function get_submit_text_parameters() {
+		return new external_function_parameters(
+				array(
+						'username' => new external_value(PARAM_TEXT, 'username'),
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
+				)
+		);
+	}
+	
+	public static function get_submit_text($username, $cmid) {
+		global $CFG, $DB;
+		
+		self::validate_parameters(self::get_submit_text_parameters(), array('username'=>$username, 'cmid'=>$cmid));
+	
+		$data = $DB->get_record('user', array('username'=>$username), 'id');
+		$userid = $data->id;
+		$data = $DB->get_record('course_modules', array('id'=>$cmid), 'instance');
+		$data = $DB->get_record('assign_submission', array('assignment'=>$data->instance, 'userid'=>$userid), 'id');
+		$data = $DB->get_record('assignsubmission_onlinetext', array('submission'=>$data->id), 'onlinetext');
+		return $data->onlinetext;
+	}
+	
+	public static function get_submit_text_returns() {
+		return new external_value(PARAM_RAW, 'text');
+	}
 }
 

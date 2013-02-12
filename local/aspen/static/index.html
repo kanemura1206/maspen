@@ -78,7 +78,7 @@
 	<div class="container">
 		<div class="row-fluid">
 			<div class="span12">
-				<!--<p>URL: %URL%, ID: %ID%, USERID: %USERID%</p>-->
+				<!--<p>URL: %URL%, CMID: %CMID%, USERID: %USERID%</p>-->
 
         <!-- Modal -->
         <div id="modal-submit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
@@ -112,9 +112,9 @@
 						<h3>Source</h3>
 						<textarea id="editor">System.p("hello, world");</textarea>
 					</div>
-					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?id=%ID%&userid=%USERID%" width="400" height="200" align=right frameborder=0></iframe><p>
+					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%" width="400" height="200" align=right frameborder=0></iframe><p>
 
-					<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?id=%ID%&userid=%USERID%" width="400" height="400"  align=right frameborder=0></iframe>
+					<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="400"  align=right frameborder=0></iframe>
 					<div class="span6" align=left>
 						<h3>Console</h3>
 				<!--		<pre id="console" class="prettyprint linenums languague-js">  </pre>   -->
@@ -142,7 +142,7 @@
 
 		<script>
 			var PATH = "%PATH%";
-			var ID = "%ID%";
+			var CMID = "%CMID%";
 			var USERID = "%USERID%";
 			var ROOTURL = "%ROOTURL%";
 		</script>

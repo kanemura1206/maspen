@@ -60,7 +60,7 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $userid = $USER->id;
 $assign = $DB->get_record('assign', array('course' => $course->id, 'name' => $cm->name), 'id', MUST_EXIST);
 $cmid = $DB->get_record('course_modules', array('course' => $course->id, 'module' => 1, 'instance' => $assign->id), 'id', MUST_EXIST)->id;
-$lti->toolurl .= "?userid=$userid&id=$cmid";
+$lti->toolurl .= "?userid=$userid&cmid=$cmid";
 
 require_login($course);
 
