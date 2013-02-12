@@ -19,14 +19,15 @@ void main() {
  	tmp.print(input);
  	tmp.flush();
  	tmp.close();
- 	sp = new SubProc("/usr/local/bin/minikonoha");
+ 	sp = new SubProc("/usr/local/bin/konoha");
 	//sp.setArgumentList(["-c", filename]);
+ 	//sp.setArgumentList(["-MJavaScript", "-Icstyle", "-IJavaStyle.Object", "-ISyntax.JavaStyleClass", "-IType.StaticVar", "-ISyntax.GlobalVariable", "-IMiniKonoha.NameSpace", "-IJavaScript.String", "-IJavaScript.Regexp", "-IJavaScript.Array", "-IMiniKonoha.Map", "-Ikonoha.iterator", filename]);
  	sp.setArgumentList(["-MJavaScript", filename]);
-	stderr.println("start minikonoha -MJavaScript " + filename);
+	stderr.println("start konoha -MJavaScript " + filename);
  	sp.bg();
  	stdout.println("Content-Type: application/javascript; charset=utf-8\n");
  	stdout.println(sp.communicate("")[0]);
-	stderr.println("end minikonoha -MJavaScript " + filename);
+	stderr.println("end konoha -MJavaScript " + filename);
 }
 
 main();

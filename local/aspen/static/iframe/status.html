@@ -36,7 +36,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
        var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
        var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
        var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-       return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
+       return year + '/' + month + '/' + day + '/ ' + hour + ':' + min + ':' + sec;
     }
 
 
@@ -57,7 +57,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
       $("#status").text(obj.status);
       $("#duedate").text(parse_time(obj.duedate));
       if(obj.timemodified == null){
-      	 $("#timemodified").text("未提出");
+      	 $("#timemodified").text("Not submitted");
       }
       else{
       	$("#timemodified").text(parse_time(obj.timemodified));
@@ -72,11 +72,11 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
     <div>
     	<table class="table table-bordered">
            <tr align=center>
-              <td bgcolor="#cccccc">提出締切日時</td>
+              <td bgcolor="#cccccc">Due date</td>
               <td id="duedate"></td>
            </tr>
            <tr align=center>
-              <td bgcolor="#cccccc">最終提出日時</td>
+              <td bgcolor="#cccccc">Last submission</td>
               <td id="timemodified"></td>
            </tr>
 	</table>

@@ -29,17 +29,6 @@ $(function() {
 
 				iframedoc.writeln("<body></body>");
 
-	                 /*       $.ajax({
-        	                        type: "GET",
-                	                url: PATH + "k/k2js.cgi",
-                        	        dataType: "text",
-                                	data: encodeURI(myCodeMirror.getValue()),
-                               		success: function(res) {
-                                        	console.log(res);
-                                        	prettyPrint();
-                                	}
-                        	});*/
-
 	                        $.ajax({
         	                        type: "GET",
                 	                url: PATH + "k/k2js.cgi",
@@ -67,6 +56,8 @@ $(function() {
 							}
 						}
 						iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
+						text = "var startTime = new Date();" + text + "var endTime = new Date() ;var msec = endTime - startTime; p('実行時間は' + msec + 'ミリ秒')";
+
 						iframedoc.writeln("<script>" + text + "</script>");
 						iframedoc.body.innerHTML += str;
 
@@ -125,6 +116,7 @@ $(function() {
                                 data: encodeURI(myCodeMirror.getValue()),
                            	success: function(res) {
 					var i;
+					console.log("'" + res + "'");
 					var array = res.split(/\r\n|\r|\n/);
 					for(i = 0; i < array.length; i++){
 						if(array[i] != "" && array[i].substring(0, 6) != " - (js"){
@@ -199,4 +191,24 @@ $(function() {
 		var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
 		return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
 	}
+        (function() {
+        	$.ajax({
+	                type: "GET",
+        	        url: ROOTURL + "webservice/rest/server.php",
+                	dataType: "text",
+	                data: {
+        	        	wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                	        wsfunction: "local_exfunctions_get_head_text",
+                        	moodlewsrestformat: "json",
+	                        user: USERID,
+        	                module: ID,
+                	},
+	                success: function(res) {
+        	                if(res != null){
+					myCodeMirror.setValue(jQuery.parseJSON(res));
+	                        }
+        	        }
+                });
+        })();
+
 });
