@@ -147,15 +147,15 @@ class local_exfunctions_external extends external_api {
 		$list = array();
 		$i = 0;
 		foreach ($data as $datum){
-			$user = $DB->get_record('user', array('id'=>$datum->user),'username');
+			$user = $DB->get_record('user', array('id'=>$datum->userid),'username');
 			$list[$i]['username'] = $user->username;
-			$list[$i]['userid'] = $datum->user;
+			$list[$i]['userid'] = $datum->userid;
 			$list[$i]['code'] = $datum->code;
 			$list[$i]['error'] = $datum->error;
 			$list[$i]['timemodified'] = NULL;
 			$i++;
 		}
-		
+	
 		$data = $DB->get_record('course_modules', array('id'=>$cmid, 'module'=>1), 'instance');
 		$assignment = $data->instance;
 		$data = $DB->get_records('assign_submission', array('assignment'=>$assignment));
@@ -178,7 +178,7 @@ class local_exfunctions_external extends external_api {
 				$i++;
 			}
 		}
-		
+
 		return $list;
 	}
 	

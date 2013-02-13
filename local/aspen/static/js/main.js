@@ -35,63 +35,62 @@ $(function() {
 	                        dataType: "text",
 	                       	data: encodeURI(myCodeMirror.getValue()),
 	                        success: function(res) {
-								var array = res.split(/\r\n|\r|\n/);
-								var i, text = "", str = "", error = [], warning = [];
-								for(i = 0; i < array.length; i++){
-									if(array[i].substring(0, 4) == " - ("){
-										array[i] = array[i].replace(/js\.......:/g, 'at line ');
-										var obj = array[i].split(/[()]/);
-										if(obj[1] == "error"){
-											error.push("(" + obj[3]  + ")" + obj[4]);
-											
-										}
-										else if(obj[1] == "warning"){
-											warning.push("(" + obj[3] + ")" + obj[4]);
-										}
-										str += array[i] + "<br>";
-										myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
-									}
-									else{
-										text += array[i] + "\n";
-									}
-								}
-								iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
-								text = "var startTime = new Date();" + text + "var endTime = new Date() ;var msec = endTime - startTime; p('実行時間は' + msec + 'ミリ秒')";
+					var array = res.split(/\r\n|\r|\n/);
+					var i, text = "", str = "", error = [], warning = [];
+					for(i = 0; i < array.length; i++){
+						if(array[i].substring(0, 4) == " - ("){
+							array[i] = array[i].replace(/js\.......:/g, 'at line ');
+							var obj = array[i].split(/[()]/);
+							if(obj[1] == "error"){
+								error.push("(" + obj[3]  + ")" + obj[4]);
+							}
+							else if(obj[1] == "warning"){
+								warning.push("(" + obj[3] + ")" + obj[4]);
+							}
+							str += array[i] + "<br>";
+							myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
+						}
+						else{
+							text += array[i] + "\n";
+						}	
+					}
+					iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
+			//		text = "var startTime = new Date();" + text + "var endTime = new Date() ;var msec = endTime - startTime; p('実行時間は' + msec + 'ミリ秒')";
 		
-								iframedoc.writeln("<script>" + text + "</script>");
-								iframedoc.body.innerHTML += str;
+					iframedoc.writeln("<script>" + text + "</script>");
+					iframedoc.body.innerHTML += str;
 		
-								var blank = 0;
-								array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
-								for(i = 0; i < array.length; i++){
-									if(array[i].trim() == ""){
-										blank++;
-									}
-								}
+					var blank = 0;
+					array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
+					for(i = 0; i < array.length; i++){
+						if(array[i].trim() == ""){
+							blank++;
+						}
+					}
 		
-								$.ajax({
-									type: "GET",
-									url: ROOTURL + "webservice/rest/server.php",
-									dataType: "text",
-									data: {
-										wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-										wsfunction: "local_exfunctions_set_run_status",
-										moodlewsrestformat: "json",
-										userid: USERID,
-										cmid: CMID,
-										code: myCodeMirror.lineCount() - blank,
-										errors: JSON.stringify({"error": error, "warning": warning}),
-										text: myCodeMirror.getValue(), 
-									},
-									success: function(res) {
-									}
-								});
-	                        }
-	                });
-			  }
-      		  window.onload = onLoad();
-			  sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-              prettyPrint();
+					$.ajax({
+						type: "GET",
+						url: ROOTURL + "webservice/rest/server.php",
+						dataType: "text",
+						data: {
+							wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+							wsfunction: "local_exfunctions_set_run_status",
+							moodlewsrestformat: "json",
+							userid: USERID,
+							cmid: CMID,
+							code: myCodeMirror.lineCount() - blank,
+							errors: JSON.stringify({"error": error, "warning": warning}),
+							text: myCodeMirror.getValue(), 
+						},
+						success: function(res) {
+						}
+					});
+	                  	}
+	                    });
+			}
+      		  	window.onload = onLoad();
+			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+        		prettyPrint();
 //		}
 	});
 
