@@ -104,22 +104,24 @@
                    <h3>提出締切日時を過ぎています。</h3>
             </div>
         </div>
-					<p><button id="button-run" class="btn btn-primary"><i class="icon-play icon-white"></i> Run</button>
+					<p><button id="button-run" class="btn btn-info"><i class="icon-play icon-white"></i> Run</button>
 					<button id="button-submit" class="btn btn-success"><i class="icon-share icon-white"></i> Submit</button>
-			<!--		<button id="button-compile" class="btn btn-info"><i class="icon-question-sign icon-white"></i> Compile</button>--></p>
+			<!--		<button id="button-compile" class="btn btn-info"><i class="icon-question-sign icon-white"></i> Compile</button>-->
+					<button id="button-stop" class="btn btn-primary" style="display: none;"><i class="icon-ban-circle icon-white"></i> Stop</button>
+					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%" width="400" height="180" align=right frameborder=0></iframe></p>
 					
 					<div class="span6" align=left>
 						<h3>Source</h3>
 						<textarea id="editor">System.p("hello, world");</textarea>
 					</div>
-					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%" width="400" height="200" align=right frameborder=0></iframe><p>
 
-					<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="400"  align=right frameborder=0></iframe>
+					<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe>
 					<div class="span6" align=left>
 						<h3>Console</h3>
-				<!--		<pre id="console" class="prettyprint linenums languague-js">  </pre>   -->
-						<iframe id="console-iframe" width="450" height="200"></iframe>
+						<pre id="console"><br><br><br></pre>
+				<!--		<iframe id="console-iframe" width="450" height="200"></iframe>  -->
 					</div>
+					<iframe id="totalRanking-iframe" src="%PATH%static/iframe/totalRanking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe>
 					
 				</div>
 			</div>

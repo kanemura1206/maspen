@@ -44,9 +44,9 @@
       function drawTable() {
         data = new google.visualization.DataTable();
         data.addColumn('string', 'Name');
-        data.addColumn('number', 'Lines Of Code');
-        data.addColumn('number', 'Error');
-	    data.addColumn('string','Time');
+        data.addColumn('number', 'Number of correct answers');
+        data.addColumn('number', 'Percentage of correct answers');
+	    data.addColumn('string', 'Submission');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",

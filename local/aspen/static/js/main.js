@@ -14,84 +14,88 @@ $(function() {
 
 	/* button actions */
 	$("#button-run").click(function() {
-//		if(myCodeMirror.getValue() != sessionStorage.getItem("previousValue") ||
-//				$("#result").text() == String.fromCharCode(160)) {
-        		var iframedoc;
-      			function onLoad() {
-        			var iframe = document.getElementById("console-iframe");
-        			if (document.all) {
-          				iframedoc = iframe.contentWindow.document;
-        			} else {
-          				iframedoc = iframe.contentDocument;
-        			}
+		$("#console").text("\n\n\n");
+		var worker = new Worker(PATH + 'static/js/workaround.js');
+		document.getElementById("button-stop").style.display = "";
 
-					iframedoc.body.innerHTML = "";
-	
-					iframedoc.writeln("<body></body>");
-	
-		            $.ajax({
-	        	            type: "GET",
-	                        url: PATH + "k/k2js.cgi",
-	                        dataType: "text",
-	                       	data: encodeURI(myCodeMirror.getValue()),
-	                        success: function(res) {
-					var array = res.split(/\r\n|\r|\n/);
-					var i, text = "", str = "", error = [], warning = [];
-					for(i = 0; i < array.length; i++){
-						if(array[i].substring(0, 4) == " - ("){
-							array[i] = array[i].replace(/js\.......:/g, 'at line ');
-							var obj = array[i].split(/[()]/);
-							if(obj[1] == "error"){
-								error.push("(" + obj[3]  + ")" + obj[4]);
-							}
-							else if(obj[1] == "warning"){
-								warning.push("(" + obj[3] + ")" + obj[4]);
-							}
-							str += array[i] + "<br>";
-							myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
+		$('#button-stop').click(function() {
+			document.getElementById("button-stop").style.display = "none";
+			worker.terminate();
+		});
+
+		$.ajax({
+			type: "GET",
+			url: PATH + "k/k2js.cgi",
+			dataType: "text",
+			data: encodeURI(myCodeMirror.getValue()),
+			success: function(res) { 
+				var array = res.split(/\r\n|\r|\n/);
+				var i, str = "", error = [], warning = [];
+				var text = "function p(text){postMessage(text)}\n";
+				for(i = 0; i < array.length; i++){
+					if(array[i].substring(0, 4) == " - ("){
+						array[i] = array[i].replace(/js\.......:/g, 'at line ');
+						var obj = array[i].split(/[()]/);
+						if(obj[1] == "error"){
+							error.push("(" + obj[3]  + ")" + obj[4]);
 						}
-						else{
-							text += array[i] + "\n";
-						}	
+						else if(obj[1] == "warning"){
+							warning.push("(" + obj[3] + ")" + obj[4]);
+						}
+						str += array[i] + "\n";
+						myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
 					}
-					iframedoc.writeln("<script>function p(text){document.body.innerHTML += text + '<br>'}</script>");
-			//		text = "var startTime = new Date();" + text + "var endTime = new Date() ;var msec = endTime - startTime; p('実行時間は' + msec + 'ミリ秒')";
-		
-					iframedoc.writeln("<script>" + text + "</script>");
-					iframedoc.body.innerHTML += str;
-		
-					var blank = 0;
-					array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
-					for(i = 0; i < array.length; i++){
-						if(array[i].trim() == ""){
-							blank++;
-						}
+					else{
+						text += array[i] + "\n";
+					}	
+				}
+
+				var blank = 0;
+				array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
+				for(i = 0; i < array.length; i++){
+					if(array[i].trim() == ""){
+						blank++;
 					}
-		
-					$.ajax({
-						type: "GET",
-						url: ROOTURL + "webservice/rest/server.php",
-						dataType: "text",
-						data: {
-							wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-							wsfunction: "local_exfunctions_set_run_status",
-							moodlewsrestformat: "json",
-							userid: USERID,
-							cmid: CMID,
-							code: myCodeMirror.lineCount() - blank,
-							errors: JSON.stringify({"error": error, "warning": warning}),
-							text: myCodeMirror.getValue(), 
-						},
-						success: function(res) {
-						}
-					});
-	                  	}
-	                    });
+				}
+				$.ajax({
+					type: "GET",
+					url: ROOTURL + "webservice/rest/server.php",
+					dataType: "text",
+					data: {
+						wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+						wsfunction: "local_exfunctions_set_run_status",
+						moodlewsrestformat: "json",
+						userid: USERID,
+						cmid: CMID,
+						code: myCodeMirror.lineCount() - blank,
+						errors: JSON.stringify({"error": error, "warning": warning}),
+						text: myCodeMirror.getValue(), 
+					},
+					success: function(res) {
+					}
+				});
+
+				var work = "function(){\n" + text + "\nreturn true;\n}";
+				var startTime = new Date();
+				worker.postMessage(work.toString());
+				worker.onmessage = function(event){
+					if(event.data != "uhai42ludkxRdvjmfb"){
+						str += event.data + "\n";
+						$("#console").text(str);
+					}
+					else{
+						document.getElementById("button-stop").style.display = "none";
+						var endTime = new Date();
+						var msec = endTime - startTime;
+						str += '\n   実行時間: ' + msec + 'ミリ秒';
+						$("#console").text(str);
+					}
+				}
 			}
-      		  	window.onload = onLoad();
-			sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-        		prettyPrint();
-//		}
+		});
+
+		sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+       		prettyPrint();
 	});
 
 	$("#button-compile").click(function() {
