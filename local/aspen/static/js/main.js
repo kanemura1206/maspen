@@ -193,24 +193,40 @@ $(function() {
 		var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
 		return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
 	}
-        (function() {
-        	$.ajax({
-	                type: "GET",
-        	        url: ROOTURL + "webservice/rest/server.php",
-                	dataType: "text",
-	                data: {
-        	        	wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-                	        wsfunction: "local_exfunctions_get_head_text",
-                        	moodlewsrestformat: "json",
-	                        userid: USERID,
-        	                cmid: CMID,
-                	},
-	                success: function(res) {
-        	                if(res != null){
-					myCodeMirror.setValue(jQuery.parseJSON(res));
-	                        }
-        	        }
-                });
-        })();
+	
+    (function() {
+      	$.ajax({
+	        type: "GET",
+            url: ROOTURL + "webservice/rest/server.php",
+           	dataType: "text",
+	        data: {
+	           	wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+	            wsfunction: "local_exfunctions_get_head_text",
+	           	moodlewsrestformat: "json",
+		        userid: USERID,
+	            cmid: CMID,
+            },
+	        success: function(res) {
+        	   if(res != null){
+				   myCodeMirror.setValue(jQuery.parseJSON(res));
+	           }
+        	}
+        });
+      	
+      	$.ajax({
+	        type: "GET",
+            url: ROOTURL + "webservice/rest/server.php",
+           	dataType: "text",
+	        data: {
+	           	wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+	            wsfunction: "local_exfunctions_init_aspen",
+	           	moodlewsrestformat: "json",
+		        userid: USERID,
+	            cmid: CMID,
+            },
+	        success: function(res) {
+        	}
+        });
+    })();
 
 });

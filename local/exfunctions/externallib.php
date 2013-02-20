@@ -343,5 +343,40 @@ class local_exfunctions_external extends external_api {
 	public static function get_submit_text_returns() {
 		return new external_value(PARAM_RAW, 'text');
 	}
+	
+	//--------------------------------------------------------------------------------------------
+	
+	public static function init_aspen_parameters() {
+		return new external_function_parameters(
+				array(
+						'userid'   => new external_value(PARAM_INT, 'userid'),
+						'cmid' => new external_value(PARAM_INT, 'course module id')
+				)
+		);
+	}
+	
+	public static function init_aspen($userid, $cmid) {
+		global $CFG, $DB;
+	
+		self::validate_parameters(self::init_aspen_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
+
+		$obj = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
+		if($obj == NULL){
+			$data = new stdClass();
+			$data->userid   = $userid;
+			$data->cmid = $cmid;
+			$data->time   = time();
+			$data->code   = 0;
+			$data->error  = 0;
+			$aspen = $DB->insert_record('aspen', $data);
+		
+			$data->aspen = $aspen;
+			$DB->insert_record('aspen_head', $data);
+		}
+	}
+	
+	public static function init_aspen_returns() {
+	}
+	
 }
 

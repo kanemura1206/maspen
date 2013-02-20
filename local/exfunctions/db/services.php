@@ -72,6 +72,13 @@ $functions = array(
 				'description' => 'get_submit_text',
 				'type'        => 'read',
 		),
+		'local_exfunctions_init_aspen' => array(
+				'classname'   => 'local_exfunctions_external',
+				'methodname'  => 'init_aspen',
+				'classpath'   => 'local/exfunctions/externallib.php',
+				'description' => 'init_aspen',
+				'type'        => 'write',
+		),
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
@@ -84,7 +91,8 @@ $services = array(
 						'local_exfunctions_get_run_status',
 						'local_exfunctions_set_run_status',
 						'local_exfunctions_get_head_text',
-						'local_exfunctions_get_submit_text',),
+						'local_exfunctions_get_submit_text',
+						'local_exfunctions_init_aspen',),
 				'requiredcapability' =>'',
 				'restrictedusers' => 0,
 				'enabled'=>1,
