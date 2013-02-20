@@ -22,7 +22,7 @@ void main() {
  	sp = new SubProc("/usr/local/bin/konoha");
 	//sp.setArgumentList(["-c", filename]);
  	//sp.setArgumentList(["-MJavaScript", "-Icstyle", "-IJavaStyle.Object", "-ISyntax.JavaStyleClass", "-IType.StaticVar", "-ISyntax.GlobalVariable", "-IMiniKonoha.NameSpace", "-IJavaScript.String", "-IJavaScript.Regexp", "-IJavaScript.Array", "-IMiniKonoha.Map", "-Ikonoha.iterator", filename]);
- 	sp.setArgumentList(["-MJavaScript", filename]);
+ 	sp.setArgumentList(["-MJavaScript", "-ISyntax.GlobalVariable", "-IType.Float", "-IJavaScript.String", "-IJavaScript.Array", "-ISyntax.CStyleWhile", filename]);
 	stderr.println("start konoha -MJavaScript " + filename);
  	sp.bg();
  	stdout.println("Content-Type: application/javascript; charset=utf-8\n");

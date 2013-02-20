@@ -44,9 +44,9 @@
       function drawTable() {
         data = new google.visualization.DataTable();
         data.addColumn('string', 'Name');
+	data.addColumn('number', 'Submission');
         data.addColumn('number', 'Number of correct answers');
-        data.addColumn('number', 'Percentage of correct answers');
-	    data.addColumn('string', 'Submission');
+        data.addColumn('string', 'Percentage of correct answers');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
@@ -95,7 +95,7 @@
   </head>
 
   <body>
-    <h3>Ranking</h3>
+    <h3>Total Ranking</h3>
     <div id='table_div'></div>
   </body>
 </html>
