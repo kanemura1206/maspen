@@ -407,5 +407,61 @@ class local_exfunctions_external extends external_api {
 	public static function init_aspen_returns() {
 	}
 	
+	//--------------------------------------------------------------------------------------------
+	
+	public static function get_total_runking_parameters() {
+		return new external_function_parameters(
+				array(
+						'cmid' => new external_value(PARAM_INT, 'course module id'),
+				)
+		);
+	}
+	
+	public static function get_total_runking($cmid) {
+		global $CFG, $DB;
+	
+		self::validate_parameters(self::get_total_runking_parameters(), array('cmid'=>$cmid));
+		
+// 		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
+// 		$course = $cm->course;
+	$course = $cmid;
+		$data = $DB->get_records('aspen_submit_head_t', array('course'=>$course));
+		
+		$obj = array();
+		foreach ($data as $datum){
+			$obj[$datum->userid]['userid'] = $datum->userid;
+			$obj[$datum->userid]['submission'] += 1;
+			$obj[$datum->userid]['correct'] += $datum->correct;
+		}
+	//	var_dump($obj);
+	
+ 		$list = array();
+		$i = 0;
+		foreach ($obj as $datum){
+			$user = $DB->get_record('user', array('id'=>$datum['userid']),'username');
+			$list[$i]['username'] = $user->username;
+			$list[$i]['userid'] = $datum['userid'];
+			$list[$i]['submission'] = $datum['submission'];
+			$list[$i]['num_of_correct'] = $datum['correct'];
+			$list[$i]['per_of_correct'] = (int)round($datum['correct'] / $datum['submission'] * 100);
+			$i++;
+		}
+	
+		return $list;
+	}
+	
+	public static function get_total_runking_returns() {
+		return new external_multiple_structure(
+				new external_single_structure(
+						array(
+								'username'  => new external_value(PARAM_TEXT, 'username'),
+								'userid'=> new external_value(PARAM_INT, 'userid'),
+								'submission'  => new external_value(PARAM_INT, 'code'),
+								'num_of_correct' => new external_value(PARAM_INT, 'num_of_correct'),
+								'per_of_correct' => new external_value(PARAM_INT, 'per_of_correct'),
+						)
+				)
+		);
+	}
 }
 

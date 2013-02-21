@@ -1,26 +1,17 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$user  = 4;
-$module= 2;
-$code  = 30;
-$errors = '{"error":[],"warning":[]}';
-$text = 'System.p("hoge");';
-
-if(1){
+$cmid = 2;
+if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$userid  = 4;
 	$cmid = 2;
-	$code  = 60;
-	$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
-	$text = 'System.p("hello");';
 }
-$functionname = 'local_exfunctions_set_run_status';
+$functionname = 'local_exfunctions_get_total_runking';
 
 $restformat = 'json';
 
-$params = array('userid'=> $userid, 'cmid'=>$cmid, 'code'=>$code, 'errors'=>$errors, 'text'=>$text);
+$params = array('cmid'=> $cmid);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 
