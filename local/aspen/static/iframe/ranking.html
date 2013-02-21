@@ -30,10 +30,10 @@
 	     if(ts == null){
 	        return "Not submitted";
 	     }
-	     var hour = ( Math.floor(ts/3600) < 10) ? '0' + Math.floor(ts/3600) : Math.floor(ts/3600);
+	     var hour = ( Math.floor(ts/3600) < 10 ) ? '0' + Math.floor(ts/3600) : Math.floor(ts/3600);
 	     ts = ts - hour * 3600;
-	     var min  = ( Math.floor(ts / 60) < 10) ? '0' + Math.floor(ts / 60) : Math.floor(ts / 60);
-	     var sec  = ts - min * 60;
+	     var min  = ( Math.floor(ts / 60) < 10 ) ? '0' + Math.floor(ts / 60) : Math.floor(ts / 60);
+	     var sec  = ( ts - min * 60 < 10 ) ? '0' + (ts - min * 60) : (ts - min * 60);
          return hour + ':' + min + ':' + sec;
       }
 
@@ -46,7 +46,7 @@
         data.addColumn('number', 'Lines Of Code');
         data.addColumn('number', 'Error');
         data.addColumn('string', 'Time');
-        data.addColumn('string', ' ');
+        data.addColumn('number', ' ');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
@@ -60,21 +60,20 @@
            }
         }).responseText;
         var obj = jQuery.parseJSON(jsonData);
-console.log(obj);
 	    var array = [];
 	    var i = 0, row = -1;
 	    while(i < obj.length){
 	       var correct;
 	       if(obj[i].correct == 1){
-	          correct = '○';
+	          correct = '◯';
 	       }
 	       else if(obj[i].correct == 0){
 	          correct = '✕';
 	       }
 	       else{
 	          correct = ' ';
-	       }
-	       var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].time), correct]) - 1;
+	       }console.log(obj[i].correct);
+	       var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].time), {v: obj[i].correct, f: correct}]) - 1;
 	       if(obj[i].userid == userid){
 	          row = num;
 	       }
@@ -90,7 +89,7 @@ console.log(obj);
 			data.setProperty(row, 4, 'style', 'background-color: yellow;');
 		}
 	     
-		data.sort([{column: 4}, {column: 3}, {column: 1, desc: true}]);
+		data.sort([{column: 4, desc: true}, {column: 3}, {column: 1, desc: true}, {column: 2}]);
         table = new google.visualization.Table(document.getElementById('table_div'));
         table.draw(data, {showRowNumber: true, allowHtml: true});
 	//google.visualization.events.addListener(table, 'select', selectHandler);

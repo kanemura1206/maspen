@@ -224,7 +224,7 @@ class local_exfunctions_external extends external_api {
 //       $data = $DB->get_record('course_modules', array('id'=>$cmid, 'module'=>1), 'instance');
 //       $assignment = $data->instance;
 
-      $data = $DB->get_records('aspen_submit_head_t', array('cmid'=>$cmid));var_dump($data);
+      $data = $DB->get_records('aspen_submit_head_t', array('cmid'=>$cmid));
       foreach ($data as $datum){
          $hit = 0;
          $start = $DB->get_record('aspen_start', array('userid'=>$datum->userid, 'cmid'=>$cmid))->time;
