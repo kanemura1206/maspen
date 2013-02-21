@@ -1,20 +1,21 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$cmid = 2;
-$userid = 5;
-if(1){
+$cmid = 10;
+$userid = 3;
+if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
 	$userid = 2;
 	$cmid = 204;
 }
 $text = "Hello, world!";
+$output = json_encode(array(1,2,3));
 $functionname = 'local_exfunctions_submit_assignment';
 
 $restformat = 'json';
 
-$params = array('cmid'=> $cmid, 'userid'=> $userid, 'text' => $text);
+$params = array('cmid'=> $cmid, 'userid'=> $userid, 'text' => $text, 'output' => $output);
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 require_once('./curl.php');

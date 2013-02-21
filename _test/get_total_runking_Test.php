@@ -5,7 +5,7 @@ $cmid = 2;
 if(0){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$cmid = 2;
+	$cmid = 108;
 }
 $functionname = 'local_exfunctions_get_total_runking';
 

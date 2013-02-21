@@ -2,54 +2,59 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>%TITLE%</title>
+<title>%TITLE%</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width">
 
 <link rel="stylesheet" href="%PATH%static/css/bootstrap.min.css">
 <style>
-    body {
+body {
 	padding-top: 60px;
 	padding-bottom: 40px;
-    }
+}
 </style>
-<link rel="stylesheet" href="%PATH%static/css/bootstrap-responsive.min.css">
+<link rel="stylesheet"
+   href="%PATH%static/css/bootstrap-responsive.min.css">
 <link rel="stylesheet" href="%PATH%static/css/main.css">
 
 <link rel="stylesheet" href="%PATH%static/css/prettify.css">
-<link rel="stylesheet" href="%PATH%static/codemirror-2.35/lib/codemirror.css">
+<link rel="stylesheet"
+   href="%PATH%static/codemirror-2.35/lib/codemirror.css">
 
-<script src="%PATH%static/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+<script
+   src="%PATH%static/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 
 </head>
 <body>
 
-<!--[if lt IE 7]>
+   <!--[if lt IE 7]>
     <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
 <![endif]-->
 
-<!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+   <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
 
-<!--<div class="navbar navbar-inverse navbar-fixed-top">
+   <!--<div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
 	<div class="container">-->
-				<!--
+   <!--
 	    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 	    </a>
 				-->
-	    <!--<a class="brand" href="#">%TITLE%</a>
+   <!--<a class="brand" href="#">%TITLE%</a>
 	    <div class="nav-collapse collapse">
 		<ul class="nav">
 		    <li class="active"><a href="#">Home</a></li>-->
-		    <!--<li><a href="#about">About</a></li>
+   <!--<li><a href="#about">About</a></li>
 		    <li><a href="#contact">Contact</a></li>
 		    <li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
@@ -64,97 +69,129 @@
 			</ul>
 		    </li>
 						-->
-		<!--</ul>-->
-		<!--<form class="navbar-form pull-right">
+   <!--</ul>-->
+   <!--<form class="navbar-form pull-right">
 		    <input class="span2" type="text" placeholder="Email">
 		    <input class="span2" type="password" placeholder="Password">
 		    <button type="submit" class="btn">Sign in</button>
 					</form>-->
-	    <!--</div>--><!--/.nav-collapse -->
-	<!--</div>
+   <!--</div>-->
+   <!--/.nav-collapse -->
+   <!--</div>
     </div>
 </div>-->
 
-	<div class="container">
-		<div class="row-fluid">
-			<div class="span12">
-			<!--	<p>URL: %URL%, CMID: %CMID%, USERID: %USERID%</p>  -->
+   <div class="container">
+      <div class="row-fluid">
+         <div class="span12">
+            <!--	<p>URL: %URL%, CMID: %CMID%, USERID: %USERID%</p>  -->
 
-        <!-- Modal -->
-        <div id="modal-submit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3>課題を提出します。よろしいですか？</h3>
+            <!-- Modal -->
+            <div id="modal-submit" class="modal hide fade" tabindex="-1"
+               role="dialog" aria-labelledby="modal-statusLabel"
+               aria-hidden="true">
+               <div class="modal-header">
+                  <button type="button" class="close"
+                     data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3>課題を提出します。よろしいですか？</h3>
+               </div>
+               <div class="modal-body">
+                  <pre>
+                     <p id="submit-text"></p>
+                  </pre>
+               </div>
+               <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal"
+                     aria-hidden="true">いいえ</button>
+                  <button id="button-submit-yes" class="btn"
+                     data-dismiss="modal" aria-hidden="true">はい</button>
+               </div>
             </div>
-            <div class="modal-body">
-                   <pre><p id="submit-text"></p></pre>
-            </div>
-	    <div class="modal-footer">
-		   <button class="btn" data-dismiss="modal" aria-hidden="true">いいえ</button>
-		   <button id="button-submit-yes" class="btn" data-dismiss="modal" aria-hidden="true">はい</button>
-            </div>
-        </div>
 
-        <!-- Modal -->
-        <div id="modal-submit-over" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-statusLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <!-- Modal -->
+            <div id="modal-submit-over" class="modal hide fade"
+               tabindex="-1" role="dialog"
+               aria-labelledby="modal-statusLabel" aria-hidden="true">
+               <div class="modal-header">
+                  <button type="button" class="close"
+                     data-dismiss="modal" aria-hidden="true">×</button>
+               </div>
+               <div class="modal-body">
+                  <h3>提出締切日時を過ぎています。</h3>
+               </div>
             </div>
-            <div class="modal-body">
-                   <h3>提出締切日時を過ぎています。</h3>
-            </div>
-        </div>
-					<p><button id="button-run" class="btn btn-info"><i class="icon-play icon-white"></i> Run</button>
-					<button id="button-submit" class="btn btn-success"><i class="icon-share icon-white"></i> Submit</button>
-			<!--		<button id="button-compile" class="btn btn-info"><i class="icon-question-sign icon-white"></i> Compile</button>-->
-					<button id="button-stop" class="btn btn-primary" style="display: none;"><i class="icon-ban-circle icon-white"></i> Stop</button>
-					<iframe id="status-iframe" src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%" width="400" height="180" align=right frameborder=0></iframe></p>
-					
-					<div class="span6" align=left>
-						<h3>Source</h3>
-						<textarea id="editor">System.p("hello, world");</textarea>
-					</div>
+            <p>
+               <button id="button-run" class="btn btn-info">
+                  <i class="icon-play icon-white"></i> Run
+               </button>
+               <button id="button-submit" class="btn btn-success">
+                  <i class="icon-share icon-white"></i> Submit
+               </button>
+               <!--		<button id="button-compile" class="btn btn-info"><i class="icon-question-sign icon-white"></i> Compile</button>-->
+               <button id="button-stop" class="btn btn-primary"
+                  style="display: none;">
+                  <i class="icon-ban-circle icon-white"></i> Stop
+               </button>
+               <iframe id="status-iframe"
+                  src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%"
+                  width="400" height="180" align=right frameborder=0></iframe>
+            </p>
 
-				<!--	<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe> -->
-					<div class="span6" align=left>
-						<h3>Console</h3>
-						<pre id="console"><br><br><br></pre>
-				<!--		<iframe id="console-iframe" width="450" height="200"></iframe>  -->
-					</div>
-				<!--	<iframe id="totalRanking-iframe" src="%PATH%static/iframe/totalRanking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe> -->
-					
-				</div>
-			</div>
-			<!--
+            <div class="span6" align=left>
+               <h3>Source</h3>
+               <textarea id="editor">System.p("hello, world");</textarea>
+            </div>
+
+            <!--	<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe> -->
+            <div class="span6" align=left>
+               <h3>Console</h3>
+               <pre id="console">
+                  <br><br><br>
+               </pre>
+               <!--		<iframe id="console-iframe" width="450" height="200"></iframe>  -->
+            </div>
+            <!--	<iframe id="totalRanking-iframe" src="%PATH%static/iframe/totalRanking.html?cmid=%CMID%&userid=%USERID%" width="400" height="250"  align=right frameborder=0></iframe> -->
+
+         </div>
+      </div>
+      <!--
 			<hr>
 			<footer>
 			<p>&copy; %COPY%</p>
 			</footer>-->
-		</div> <!-- /container -->
+   </div>
+   <!-- /container -->
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="%PATH%static/js/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+   <script
+      src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+   <script>
+            window.jQuery
+                  || document
+                        .write('<script src="%PATH%static/js/vendor/jquery-1.8.2.min.js"><\/script>')
+   </script>
 
-        <script src="%PATH%static/js/vendor/bootstrap.min.js"></script>
+   <script src="%PATH%static/js/vendor/bootstrap.min.js"></script>
 
-        <script src="%PATH%static/js/vendor/prettify.js"></script>
-		<script>prettyPrint();</script>
-        <script src="%PATH%static/codemirror-2.35/lib/codemirror.js"></script>
-        <script src="%PATH%static/codemirror-2.35/mode/clike/clike.js"></script>
+   <script src="%PATH%static/js/vendor/prettify.js"></script>
+   <script>
+            prettyPrint();
+   </script>
+   <script src="%PATH%static/codemirror-2.35/lib/codemirror.js"></script>
+   <script src="%PATH%static/codemirror-2.35/mode/clike/clike.js"></script>
 
-		<script>
+   <script>
 			var PATH = "%PATH%";
 			var CMID = "%CMID%";
 			var USERID = "%USERID%";
 			var ROOTURL = "%ROOTURL%";
-		</script>
-        <script src="%PATH%static/js/main.js"></script>
+   </script>
+   <script src="%PATH%static/js/main.js"></script>
 
-        <script>
+   <script>
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
             s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
-    </body>
+   </script>
+</body>
 </html>
