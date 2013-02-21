@@ -217,7 +217,7 @@ class local_exfunctions_external extends external_api {
          $list[$i]['code'] = $datum->code;
          $list[$i]['error'] = $datum->error;
          $list[$i]['time'] = NULL;
-         $list[$i]['correct'] = 0;
+         $list[$i]['correct'] = NULL;
          $i++;
       }
 

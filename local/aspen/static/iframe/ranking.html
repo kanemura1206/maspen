@@ -46,6 +46,7 @@
         data.addColumn('number', 'Lines Of Code');
         data.addColumn('number', 'Error');
         data.addColumn('string', 'Time');
+        data.addColumn('string', ' ');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
@@ -63,11 +64,21 @@ console.log(obj);
 	    var array = [];
 	    var i = 0, row = -1;
 	    while(i < obj.length){
-	    	   var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].timemodified)]) - 1;
-	    	   if(obj[i].userid == userid){
-	    		     row = num;
-	    	   }
-	    	   i++;
+	       var correct;
+	       if(obj[i].correct == 1){
+	          correct = '○';
+	       }
+	       else if(obj[i].correct == 0){
+	          correct = '✕';
+	       }
+	       else{
+	          correct = ' ';
+	       }
+	       var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].time), correct]) - 1;
+	       if(obj[i].userid == userid){
+	          row = num;
+	       }
+	       i++;
 	    }
 
         data.addRows(array);
@@ -76,9 +87,10 @@ console.log(obj);
 			data.setProperty(row, 1, 'style', 'background-color: yellow;');
 			data.setProperty(row, 2, 'style', 'background-color: yellow;');
 			data.setProperty(row, 3, 'style', 'background-color: yellow;');
+			data.setProperty(row, 4, 'style', 'background-color: yellow;');
 		}
 	     
-		data.sort([{column: 3}, {column: 1, desc: true}]);
+		data.sort([{column: 4}, {column: 3}, {column: 1, desc: true}]);
         table = new google.visualization.Table(document.getElementById('table_div'));
         table.draw(data, {showRowNumber: true, allowHtml: true});
 	//google.visualization.events.addListener(table, 'select', selectHandler);
