@@ -129,9 +129,27 @@ class local_exfunctions_external extends external_api {
                 $data->cmid = $cmid;
                 $data->time   = time();
                 $data->correct   = 0;
-                $data->text  = $text;
 		$data->course = (int)$cm->course;
-		$DB->insert_record('aspen_submit_t', $data);
+                $data->text  = $text;
+		$aspen_submit = $DB->insert_record('aspen_submit_t', $data);
+
+		$data = new stdClass();
+		$data->aspen_submit = $aspen_submit;
+                $data->userid   = $userid;
+                $data->cmid = $cmid;
+                $data->time   = time();
+                $data->correct   = 0;
+                $data->course = (int)$cm->course;
+
+		$obj = $DB->get_record('aspen_submit_head_t', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
+		if($obj == false){
+			$DB->insert_record('aspen_submit_head_t', $data);
+		}
+		else{
+			$data->id = $obj->id;			
+			$DB->update_record('aspen_submit_head_t', $data);
+		}
+
 	}
 
 	public static function submit_assignment_returns() {
