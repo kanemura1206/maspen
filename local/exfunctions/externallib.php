@@ -422,9 +422,9 @@ class local_exfunctions_external extends external_api {
 	
 		self::validate_parameters(self::get_total_runking_parameters(), array('cmid'=>$cmid));
 		
-// 		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
-// 		$course = $cm->course;
-	$course = $cmid;
+ 		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
+ 		$course = $cm->course;
+
 		$data = $DB->get_records('aspen_submit_head_t', array('course'=>$course));
 		
 		$obj = array();
@@ -433,7 +433,6 @@ class local_exfunctions_external extends external_api {
 			$obj[$datum->userid]['submission'] += 1;
 			$obj[$datum->userid]['correct'] += $datum->correct;
 		}
-	//	var_dump($obj);
 	
  		$list = array();
 		$i = 0;
