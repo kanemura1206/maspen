@@ -46,7 +46,7 @@
         data.addColumn('string', 'Name');
         data.addColumn('number', 'Lines Of Code');
         data.addColumn('number', 'Error');
-	    data.addColumn('string','Time');
+	data.addColumn('string', 'Time');
 
         var jsonData = $.ajax({
            url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
@@ -60,6 +60,7 @@
            }
         }).responseText;
         var obj = jQuery.parseJSON(jsonData);
+console.log(obj);
 	    var array = [];
 	    var i = 0, row = -1;
 	    while(i < obj.length){
