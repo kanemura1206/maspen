@@ -130,10 +130,7 @@ class local_exfunctions_external extends external_api {
                 $data->time   = time();
                 $data->correct   = 0;
                 $data->text  = $text;
-
-
 		$data->course = (int)$cm->course;
-		var_dump($data);
 		$DB->insert_record('aspen_submit_t', $data);
 	}
 
