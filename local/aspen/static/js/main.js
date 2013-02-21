@@ -173,7 +173,7 @@ $(function() {
 				moodlewsrestformat: "json",
 				cmid: CMID,
 				userid: USERID,
-				text: "<pre>" + myCodeMirror.getValue() + "</pre>"
+				text: myCodeMirror.getValue()
 			},
 			success: function(res) {
 				prettyPrint();

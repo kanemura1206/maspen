@@ -120,9 +120,21 @@ class local_exfunctions_external extends external_api {
 		// Mark as viewed
 		$completion=new completion_info($course);
 		$completion->set_module_viewed($cm);
-		
+	
 		// Get the assign to render the page
 		$assign->submit_assign($cmid, $userid, $text);
+
+                $data = new stdClass();
+                $data->userid   = $userid;
+                $data->cmid = $cmid;
+                $data->time   = time();
+                $data->correct   = 0;
+                $data->text  = $text;
+
+
+		$data->course = (int)$cm->course;
+		var_dump($data);
+		$DB->insert_record('aspen_submit_t', $data);
 	}
 
 	public static function submit_assignment_returns() {
@@ -366,6 +378,8 @@ class local_exfunctions_external extends external_api {
 			$data->userid   = $userid;
 			$data->cmid = $cmid;
 			$data->time   = time();
+			$aspen = $DB->insert_record('aspen_start', $data);
+
 			$data->code   = 0;
 			$data->error  = 0;
 			$aspen = $DB->insert_record('aspen', $data);
