@@ -217,19 +217,21 @@ class local_exfunctions_external extends external_api {
          $list[$i]['code'] = $datum->code;
          $list[$i]['error'] = $datum->error;
          $list[$i]['time'] = NULL;
+         $list[$i]['correct'] = 0;
          $i++;
       }
 
 //       $data = $DB->get_record('course_modules', array('id'=>$cmid, 'module'=>1), 'instance');
 //       $assignment = $data->instance;
 
-      $data = $DB->get_records('aspen_submit_head_t', array('cmid'=>$cmid));
+      $data = $DB->get_records('aspen_submit_head_t', array('cmid'=>$cmid));var_dump($data);
       foreach ($data as $datum){
          $hit = 0;
          $start = $DB->get_record('aspen_start', array('userid'=>$datum->userid, 'cmid'=>$cmid))->time;
          for($j = 0; $j < $i; $j++){
             if($list[$j]['userid'] == $datum->userid){
                $list[$j]['time'] = $datum->time - $start;
+               $list[$j]['correct'] = $datum->correct;
                $hit = 1;
                break;
             }
@@ -241,6 +243,7 @@ class local_exfunctions_external extends external_api {
             $list[$i]['code'] = 0;
             $list[$i]['error'] = 0;
             $list[$i]['time'] = $datum->time - $start;
+            $list[$i]['correct'] = $datum->correct;
             $i++;
          }
       }
@@ -257,6 +260,7 @@ class local_exfunctions_external extends external_api {
                                  'code'  => new external_value(PARAM_INT, 'code', VALUE_OPTIONAL),
                                  'error' => new external_value(PARAM_INT, 'error', VALUE_OPTIONAL),
                                  'time' => new external_value(PARAM_INT, 'time', VALUE_OPTIONAL),
+                                 'correct'  => new external_value(PARAM_INT, 'correct', VALUE_OPTIONAL),
                         )
                )
       );
