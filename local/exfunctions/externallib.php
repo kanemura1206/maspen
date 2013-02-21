@@ -423,6 +423,28 @@ class local_exfunctions_external extends external_api {
 		self::validate_parameters(self::get_total_runking_parameters(), array('cmid'=>$cmid));
 		
  		$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
+$data = $DB->get_record('lti', array('course'=>$cm->course, 'name'=>$cm->name),'intro');
+$intro = $data->intro;
+$intro = strip_tags($intro);
+$intro = str_replace("\r", "", $intro);
+$list = explode("\n", $intro);
+
+$i = 0;
+$key = 0;
+$array = array();
+
+while($i < count($list)){
+	if($key == 1){
+		$array[] = $list[$i];
+	}
+	if($list[$i] == "#Output"){
+		$key = 1;
+	}
+	$i++; 
+}
+
+var_dump($array);
+exit;
  		$course = $cm->course;
 
 		$data = $DB->get_records('aspen_submit_head_t', array('course'=>$course));
