@@ -213,20 +213,22 @@ $(function() {
          }
       });
 
-      $.ajax({
-         type: "GET",
-         url: ROOTURL + "webservice/rest/server.php",
-         dataType: "text",
-         data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-            wsfunction: "local_exfunctions_init_aspen",
-            moodlewsrestformat: "json",
-            userid: USERID,
-            cmid: CMID,
-         },
-         success: function(res) {
-         }
-      });
+      if(USERID != 2){
+         $.ajax({
+            type: "GET",
+            url: ROOTURL + "webservice/rest/server.php",
+            dataType: "text",
+            data: {
+               wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+               wsfunction: "local_exfunctions_init_aspen",
+               moodlewsrestformat: "json",
+               userid: USERID,
+               cmid: CMID,
+            },
+            success: function(res) {
+            }
+         });
+      }
    })();
 
 });
