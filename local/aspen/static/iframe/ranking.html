@@ -72,7 +72,7 @@
 	       }
 	       else{
 	          correct = ' ';
-	       }console.log(obj[i].correct);
+	       }
 	       var num = array.push([obj[i].username, obj[i].code, obj[i].error, parse_time(obj[i].time), {v: obj[i].correct, f: correct}]) - 1;
 	       if(obj[i].userid == userid){
 	          row = num;
@@ -92,17 +92,9 @@
 		data.sort([{column: 4, desc: true}, {column: 3}, {column: 1, desc: true}, {column: 2}]);
         table = new google.visualization.Table(document.getElementById('table_div'));
         table.draw(data, {showRowNumber: true, allowHtml: true});
-	//google.visualization.events.addListener(table, 'select', selectHandler);
       }
 
-      function selectHandler() {
-          var selection = table.getSelection();
-	      for (var i = 0; i < selection.length; i++) {
-              var item = selection[i];
-              var str = data.getFormattedValue(item.row, 0);
-	      $(window.parent.document).find('#modal-submit').modal("show");
-          }
-      }
+
     </script>
 </head>
 

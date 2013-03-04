@@ -119,7 +119,6 @@ $(function() {
             data: encodeURI(myCodeMirror.getValue()),
             success: function(res) {
                var i;
-               console.log("'" + res + "'");
                var array = res.split(/\r\n|\r|\n/);
                for(i = 0; i < array.length; i++){
                   if(array[i] != "" && array[i].substring(0, 6) != " - (js"){
@@ -163,6 +162,40 @@ $(function() {
    });
 
    $("#button-submit-yes").click(function() {
+      var result = new Array();
+      
+      var worker = new Worker(PATH + 'static/js/workaround.js');
+      document.getElementById("button-stop").style.display = "";
+
+      $('#button-stop').click(function() {
+         document.getElementById("button-stop").style.display = "none";
+         worker.terminate();
+      });
+      
+      $.ajax({
+         type: "GET",
+         url: PATH + "k/k2js.cgi",
+         dataType: "text",
+         data: encodeURI(myCodeMirror.getValue()),
+         success: function(res) { 
+            var array = res.split(/\r\n|\r|\n/);
+            var i, str = "", error = [], warning = [];
+            var text = "function p(text){postMessage(text)}\n";
+            for(i = 0; i < array.length; i++){
+               if(array[i].substring(0, 4) != " - ("){
+                  text += array[i] + "\n";
+               }	
+            }
+
+            var work = "function(){\n" + text + "\nreturn true;\n}";
+            var startTime = new Date();
+            worker.postMessage(work.toString());
+            worker.onmessage = function(event){
+               if(event.data != "uhai42ludkxRdvjmfb"){
+                  result.push(event.data);
+               }
+               else{
+                  document.getElementById("button-stop").style.display = "none";
       $.ajax({
          type: "GET",
          url: ROOTURL + "webservice/rest/server.php",
@@ -173,13 +206,19 @@ $(function() {
             moodlewsrestformat: "json",
             cmid: CMID,
             userid: USERID,
-            text: myCodeMirror.getValue()
+            text: myCodeMirror.getValue(),
+	    output: JSON.stringify(result)
          },
          success: function(res) {
             prettyPrint();
          }
       });
       document.getElementById("status-iframe").contentWindow.location.reload();
+               }
+            }
+         }
+      });
+
    });
 
    function parse_time(ts) {
