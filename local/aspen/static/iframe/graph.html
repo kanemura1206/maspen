@@ -1,46 +1,54 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>Google Visualization API Sample</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Google Visualization API Sample</title>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
-                google.load('visualization', '1', {packages: ['annotatedtimeline']});
-                function drawVisualization() {
-                        var data = new google.visualization.DataTable();
-                        data.addColumn('date', 'Date');
-                        data.addColumn('number', 'code');
-                        data.addColumn('number', 'error');
-                        data.addColumn('number', 'score');
+   google.load('visualization', '1', {
+      packages : [ 'annotatedtimeline' ]
+   });
+   function drawVisualization() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('date', 'Date');
+      data.addColumn('number', 'code');
+      data.addColumn('number', 'error');
+      data.addColumn('number', 'score');
 
-			var jsonData = $.ajax({
-                                url: ROOTURL + "webservice/rest/server.php",
-                                dataType: "json",
-				async: false,
-                                data: {
-                                        wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-                                        wsfunction: "local_exfunctions_get_run_status",
-                                        moodlewsrestformat: "json",
-                                        id: 2,
-                                        userid: 3
-                                }
-                        }).responseText;
-                        var obj = jQuery.parseJSON(jsonData);
-			var array = [];
-                        for(var i in obj){
-				array.push([new Date(obj[i]['time']*1000), obj[i]['code'], obj[i]['error'], obj[i]['score'] ])
-			}
-                        data.addRows(array);
+      var jsonData = $.ajax({
+         url : ROOTURL + "webservice/rest/server.php",
+         dataType : "json",
+         async : false,
+         data : {
+            wstoken : "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wsfunction : "local_exfunctions_get_run_status",
+            moodlewsrestformat : "json",
+            id : 2,
+            userid : 3
+         }
+      }).responseText;
+      var obj = jQuery.parseJSON(jsonData);
+      var array = [];
+      for ( var i in obj) {
+         array.push([ new Date(obj[i]['time'] * 1000), obj[i]['code'],
+               obj[i]['error'], obj[i]['score'] ])
+      }
+      data.addRows(array);
 
-                        var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
-                                        document.getElementById('visualization'));
-                        annotatedtimeline.draw(data, {'displayAnnotations': true, 'dateFormat': "yyyy.MM.dd 'at' HH:mm:ss", 'fill': 10, 'thickness': 2});
-                }
+      var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+            document.getElementById('visualization'));
+      annotatedtimeline.draw(data, {
+         'displayAnnotations' : true,
+         'dateFormat' : "yyyy.MM.dd 'at' HH:mm:ss",
+         'fill' : 10,
+         'thickness' : 2
+      });
+   }
 
-                google.setOnLoadCallback(drawVisualization);
+   google.setOnLoadCallback(drawVisualization);
 </script>
 </head>
-<body style="font-family: Arial;border: 0 none;">
-<div id="visualization" style="width: 400px; height: 300px;"></div>
+<body style="font-family: Arial; border: 0 none;">
+   <div id="visualization" style="width: 400px; height: 300px;"></div>
 </body>
 </html>

@@ -10,8 +10,8 @@ $text = 'System.p("hoge");';
 if(1){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$userid  = 4;
-	$cmid = 2;
+	$userid  = 2;
+	$cmid = 204;
 	$code  = 60;
 	$errors = '{"error":[" undefined name: i"," undefined name: l"],"warning":[]}';
 	$text = 'System.p("hello");';

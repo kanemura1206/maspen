@@ -74,7 +74,8 @@ class local_exfunctions_external extends external_api {
    public static function submit_assignment_parameters() {
       return new external_function_parameters(
                array(
-                        'cmid'   => new external_value(PARAM_INT, 'course module id'),
+                        'name'   => new external_value(PARAM_RAW, 'assign name', VALUE_DEFAULT, ""),
+                        'cmid'   => new external_value(PARAM_INT, 'course module id', VALUE_DEFAULT, 0),
                         'userid' => new external_value(PARAM_INT, 'userid'),
                         'text'   => new external_value(PARAM_RAW, 'text'),
                         'output' => new external_value(PARAM_RAW, 'output'),
@@ -82,7 +83,7 @@ class local_exfunctions_external extends external_api {
       );
    }
 
-   public static function submit_assignment($cmid, $userid, $text, $output) {
+   public static function submit_assignment($name="", $cmid=0, $userid, $text, $output) {
       global $CFG, $DB;
       /** config.php */
       require_once("$CFG->dirroot/config.php");
@@ -90,7 +91,16 @@ class local_exfunctions_external extends external_api {
       require_once("$CFG->dirroot/mod/assign/locallib.php");
       require_once("$CFG->dirroot/mod/assign/lib.php");
 
-      self::validate_parameters(self::submit_assignment_parameters(), array('cmid'=>$cmid, 'userid'=>$userid, 'text'=>$text, 'output'=>$output));
+      //self::validate_parameters(self::submit_assignment_parameters(), array('name'=>$name, 'cmid'=>$cmid, 'text'=>$text));
+      if($name!="" && $cmid==0){
+         $cmid = (int)self::get_course_module_id_from_assign_name($name);
+      }
+      elseif ($name=="" && $cmid!=0){
+
+      }
+      else{
+         throw new moodle_exception('invalid_parameter_exception');
+      }
 
       //	$url = new moodle_url('/mod/assign/view.php', array('cmid' => $cmid)); // Base URL
 
@@ -158,7 +168,25 @@ class local_exfunctions_external extends external_api {
       $data->course  = (int)$cm->course;
       $data->text    = $text;
 
-      $DB->insert_record('aspen_submit', $data);
+      $aspen_submit = $DB->insert_record('aspen_submit_t', $data);
+
+      $data = new stdClass();
+      $data->aspen_submit = $aspen_submit;
+      $data->userid  = $userid;
+      $data->cmid    = $cmid;
+      $data->time    = time();
+      $data->correct = $correct;
+      $data->course  = (int)$cm->course;
+
+      $obj = $DB->get_record('aspen_submit_head_t', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
+      if($obj == false){
+         $DB->insert_record('aspen_submit_head_t', $data);
+      }
+      else{
+         $data->id = $obj->id;
+         $DB->update_record('aspen_submit_head_t', $data);
+      }
+
    }
 
    public static function submit_assignment_returns() {
@@ -179,34 +207,43 @@ class local_exfunctions_external extends external_api {
 
       self::validate_parameters(self::get_runking_parameters(), array('cmid'=>$cmid));
 
+      $data = $DB->get_records('aspen_head', array('cmid'=>$cmid));
       $list = array();
       $i = 0;
-      
-      $data = $DB->get_record('course_modules', array('id'=>$cmid), 'course');
-      $data = $DB->get_records('enrol', array('courseid' => $data->course), '', 'id');
-      foreach ($data as $obj){
-         $users = $DB->get_records('user_enrolments', array('enrolid' => $obj->id), '', 'userid');
-         foreach ($users as $userid){
-            $user = $DB->get_record('user', array('id'=>$userid),'username');
-            $list[$i]['username'] = $user->username;
-            $list[$i]['userid'] = $userid;
+      foreach ($data as $datum){
+         $user = $DB->get_record('user', array('id'=>$datum->userid),'username');
+         $list[$i]['username'] = $user->username;
+         $list[$i]['userid'] = $datum->userid;
+         $list[$i]['code'] = $datum->code;
+         $list[$i]['error'] = $datum->error;
+         $list[$i]['time'] = NULL;
+         $list[$i]['correct'] = NULL;
+         $i++;
+      }
+
+//       $data = $DB->get_record('course_modules', array('id'=>$cmid, 'module'=>1), 'instance');
+//       $assignment = $data->instance;
+
+      $data = $DB->get_records('aspen_submit_head_t', array('cmid'=>$cmid));
+      foreach ($data as $datum){
+         $hit = 0;
+         $start = $DB->get_record('aspen_start', array('userid'=>$datum->userid, 'cmid'=>$cmid))->time;
+         for($j = 0; $j < $i; $j++){
+            if($list[$j]['userid'] == $datum->userid){
+               $list[$j]['time'] = $datum->time - $start;
+               $list[$j]['correct'] = $datum->correct;
+               $hit = 1;
+               break;
+            }
+         }
+         if(!$hit){
+            $obj = $DB->get_record('user', array('id'=>$datum->userid),'*');
+            $list[$i]['username'] = $obj->username;
+            $list[$i]['userid'] = $datum->userid;
             $list[$i]['code'] = 0;
             $list[$i]['error'] = 0;
-            $list[$i]['time'] = 0;
-            $list[$i]['correct'] = 0;
-            
-            $run = $DB->get_records('aspen_run', array('cmid'=>$cmid, 'userid'=>$userid));
-            if($run != NULL){
-               $list[$i]['code'] = $run[count($run) -1]->code;
-               $list[$i]['error'] = $run[count($run) -1]->error;
-               
-               $submit = $DB->get_records('aspen_submit', array('cmid'=>$cmid, 'userid'=>$userid));
-               if($submit != NULL){
-                  $list[$j]['time'] = $submit[count($submit) -1]->time - $run[0]->time;
-                  $list[$j]['correct'] = $submit[count($submit) -1]->correct;
-               }
-            }
-            
+            $list[$i]['time'] = $datum->time - $start;
+            $list[$i]['correct'] = $datum->correct;
             $i++;
          }
       }
@@ -277,27 +314,48 @@ class local_exfunctions_external extends external_api {
                         'userid'   => new external_value(PARAM_INT, 'userid'),
                         'cmid' => new external_value(PARAM_INT, 'course module id'),
                         'code'   => new external_value(PARAM_INT, 'code'),
-                        'codetext'   => new external_value(PARAM_RAW, 'codetext'),
-                        'error' => new external_value(PARAM_RAW, 'error'),
-                        'errortext'   => new external_value(PARAM_RAW, 'errortext')
+                        'errors' => new external_value(PARAM_RAW, 'errors'),
+                        'text'   => new external_value(PARAM_RAW, 'text')
                )
       );
    }
 
-   public static function set_run_status($userid, $cmid, $code, $codetext, $error, $errortext) {
+   public static function set_run_status($userid, $cmid, $code, $errors, $text) {
       global $CFG, $DB;
 
-      self::validate_parameters(self::set_run_status_parameters(), array('userid'=>$userid, 'cmid'=>$cmid, 'code'=>$code, 'codetext'=>$codetext, 'error'=>$error, 'errortext'=>$errortext));
+      self::validate_parameters(self::set_run_status_parameters(), array('userid'=>$userid, 'cmid'=>$cmid, 'code'=>$code, 'errors'=>$errors, 'text'=>$text));
+
+      $obj = json_decode($errors);
+      $error = count($obj->error) + count($obj->warning);
+      $time = time();
 
       $data = new stdClass();
       $data->userid   = $userid;
       $data->cmid = $cmid;
       $data->time   = time();
       $data->code   = $code;
-      $data->codetext = $codetext;
       $data->error  = $error;
-      $data->errortext = $errortext;
-      $aspen = $DB->insert_record('aspen_run', $data);
+      $aspen = $DB->insert_record('aspen', $data);
+
+      $data->aspen = $aspen;
+      $obj = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
+      if($obj == NULL){
+         $DB->insert_record('aspen_head', $data);
+      }
+      else{
+         $data->id = $obj->id;
+         $DB->update_record('aspen_head', $data);
+      }
+
+      $data = new stdClass();
+      $data->aspen = $aspen;
+      $data->text = $text;
+      $DB->insert_record('aspen_text', $data);
+
+      $data = new stdClass();
+      $data->aspen = $aspen;
+      $data->errors = $errors;
+      $DB->insert_record('aspen_error', $data);
    }
 
    public static function set_run_status_returns() {
@@ -319,12 +377,40 @@ class local_exfunctions_external extends external_api {
 
       self::validate_parameters(self::get_head_text_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 
-      $data = $DB->get_records('aspen_run', array('userid'=>$userid, 'cmid'=>$cmid), '', 'codetext');
-      
-      return $data[count($data) -1]->codetext;
+      $data = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'aspen');
+      $data = $DB->get_record('aspen_text', array('aspen'=>$data->aspen), 'text');
+      return $data->text;
    }
 
    public static function get_head_text_returns() {
+      return new external_value(PARAM_RAW, 'text');
+   }
+
+   //--------------------------------------------------------------------------------------------
+
+   public static function get_submit_text_parameters() {
+      return new external_function_parameters(
+               array(
+                        'username' => new external_value(PARAM_TEXT, 'username'),
+                        'cmid' => new external_value(PARAM_INT, 'course module id'),
+               )
+      );
+   }
+
+   public static function get_submit_text($username, $cmid) {
+      global $CFG, $DB;
+
+      self::validate_parameters(self::get_submit_text_parameters(), array('username'=>$username, 'cmid'=>$cmid));
+
+      $data = $DB->get_record('user', array('username'=>$username), 'id');
+      $userid = $data->id;
+      $data = $DB->get_record('course_modules', array('id'=>$cmid), 'instance');
+      $data = $DB->get_record('assign_submission', array('assignment'=>$data->instance, 'userid'=>$userid), 'id');
+      $data = $DB->get_record('assignsubmission_onlinetext', array('submission'=>$data->id), 'onlinetext');
+      return $data->onlinetext;
+   }
+
+   public static function get_submit_text_returns() {
       return new external_value(PARAM_RAW, 'text');
    }
 
@@ -344,17 +430,20 @@ class local_exfunctions_external extends external_api {
 
       self::validate_parameters(self::init_aspen_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 
-      $obj = $DB->get_record('aspen_run', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
+      $obj = $DB->get_record('aspen_head', array('userid'=>$userid, 'cmid'=>$cmid), 'id');
       if($obj == NULL){
          $data = new stdClass();
          $data->userid   = $userid;
          $data->cmid = $cmid;
          $data->time   = time();
+         $aspen = $DB->insert_record('aspen_start', $data);
+
          $data->code   = 0;
-         $data->codetext   = ' ';
          $data->error  = 0;
-         $data->errortext   = ' ';
-         $aspen = $DB->insert_record('aspen_run', $data);
+         $aspen = $DB->insert_record('aspen', $data);
+
+         $data->aspen = $aspen;
+         $DB->insert_record('aspen_head', $data);
       }
    }
 
@@ -379,36 +468,28 @@ class local_exfunctions_external extends external_api {
       $cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
       
       $course = $cm->course;
-      
+
+      $data = $DB->get_records('aspen_submit_head_t', array('course'=>$course));
+
+      $obj = array();
+      foreach ($data as $datum){
+         $obj[$datum->userid]['userid'] = $datum->userid;
+         $obj[$datum->userid]['submission'] += 1;
+         $obj[$datum->userid]['correct'] += $datum->correct;
+      }
+
       $list = array();
       $i = 0;
-      
-      $data = $DB->get_records('enrol', array('courseid' => $course), '', 'id');
-      foreach ($data as $obj){
-         $users = $DB->get_records('user_enrolments', array('enrolid' => $obj->id), '', 'userid');
-         foreach ($users as $userid){
-            $user = $DB->get_record('user', array('id'=>$userid->userid),'username');
-            $list[$i]['username'] = $user->username;
-            $list[$i]['userid'] = $userid;
-            $list[$i]['submission'] = 0;
-            $list[$i]['num_of_correct'] = 0;
-            
-            $cms = $DB->get_records('course_modules', array('course'=>$course, 'module'=>1));
-            foreach ($cms as $cm){
-               $submit = $DB->get_records('aspen_submit', array('cmid'=>$cm->id, 'userid'=>$userid));
-               if($submit != NULL){
-                  $list[$i]['submission'] += 1;
-                  $list[$i]['num_of_correct'] += $submit->correct;
-               }
-            }
-            if($list[$i]['submission'] != 0){
-               $list[$i]['per_of_correct'] = (int)round($list[$i]['correct'] / $list[$i]['submission'] * 100);
-            }
-         }
-      
+      foreach ($obj as $datum){
+         $user = $DB->get_record('user', array('id'=>$datum['userid']),'username');
+         $list[$i]['username'] = $user->username;
+         $list[$i]['userid'] = $datum['userid'];
+         $list[$i]['submission'] = $datum['submission'];
+         $list[$i]['num_of_correct'] = $datum['correct'];
+         $list[$i]['per_of_correct'] = (int)round($datum['correct'] / $datum['submission'] * 100);
          $i++;
       }
-      
+
       return $list;
    }
 

@@ -27,7 +27,7 @@
       }
 
       function parse_time(ts) {
-	     if(ts == null){
+	     if(ts == 0){
 	        return "Not submitted";
 	     }
 	     var hour = ( Math.floor(ts/3600) < 10 ) ? '0' + Math.floor(ts/3600) : Math.floor(ts/3600);
@@ -65,10 +65,10 @@
 	    while(i < obj.length){
 	       var correct;
 	       if(obj[i].correct == 1){
-	          correct = '◯';
+	          correct = '笳ｯ';
 	       }
 	       else if(obj[i].correct == 0){
-	          correct = '✕';
+	          correct = '笨�;
 	       }
 	       else{
 	          correct = ' ';

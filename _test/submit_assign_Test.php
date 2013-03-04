@@ -1,16 +1,16 @@
 <?php
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
-$cmid = 10;
+$cmid = 2;
 $userid = 3;
-if(0){
+if(1){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$userid = 2;
+	$userid = 3;
 	$cmid = 204;
 }
 $text = "Hello, world!";
-$output = json_encode(array(1,2,3));
+$output = json_encode(array(120));
 $functionname = 'local_exfunctions_submit_assignment';
 
 $restformat = 'json';

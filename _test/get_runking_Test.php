@@ -2,10 +2,10 @@
 $token = '08785ff27bbf462a64cca1fee185255f';
 $domainname = 'http://localhost/maspen';
 $cmid = 2;
-if(0){
+if(1){
 	$token = '2d1a05efd36f0751a6a9fa7c6e3179e7';
 	$domainname = 'http://konoha.ubicg.ynu.ac.jp/maspen';
-	$cmid = 2;
+	$cmid = 142;
 }
 $functionname = 'local_exfunctions_get_runking';
 

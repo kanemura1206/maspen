@@ -68,9 +68,8 @@ $(function() {
                   userid: USERID,
                   cmid: CMID,
                   code: myCodeMirror.lineCount() - blank,
-                  codetext: myCodeMirror.getValue(),
-                  error: error.length + warning.length,
-                  errortext: JSON.stringify({"error": error, "warning": warning})
+                  errors: JSON.stringify({"error": error, "warning": warning}),
+                  text: myCodeMirror.getValue(), 
                },
                success: function(res) {
                }
@@ -208,7 +207,7 @@ $(function() {
             cmid: CMID,
             userid: USERID,
             text: myCodeMirror.getValue(),
-            output: JSON.stringify(result)
+	    output: JSON.stringify(result)
          },
          success: function(res) {
             prettyPrint();
