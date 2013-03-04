@@ -72,13 +72,6 @@ $functions = array(
 				'description' => 'get_head_text',
 				'type'        => 'read',
 		),
-		'local_exfunctions_get_submit_text' => array(
-				'classname'   => 'local_exfunctions_external',
-				'methodname'  => 'get_submit_text',
-				'classpath'   => 'local/exfunctions/externallib.php',
-				'description' => 'get_submit_text',
-				'type'        => 'read',
-		),
 		'local_exfunctions_init_aspen' => array(
 				'classname'   => 'local_exfunctions_external',
 				'methodname'  => 'init_aspen',
@@ -99,7 +92,6 @@ $services = array(
 						'local_exfunctions_get_run_status',
 						'local_exfunctions_set_run_status',
 						'local_exfunctions_get_head_text',
-						'local_exfunctions_get_submit_text',
 						'local_exfunctions_init_aspen',),
 				'requiredcapability' =>'',
 				'restrictedusers' => 0,
