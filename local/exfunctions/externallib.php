@@ -185,29 +185,31 @@ class local_exfunctions_external extends external_api {
       $data = $DB->get_record('course_modules', array('id'=>$cmid), 'course');
       $data = $DB->get_records('enrol', array('courseid' => $data->course), '', 'id');
       foreach ($data as $obj){
-         $users = $DB->get_records('user_enrolments', array('enrolid' => $obj->id), '', 'userid');
-         foreach ($users as $userid){
-            $user = $DB->get_record('user', array('id'=>$userid),'username');
-            $list[$i]['username'] = $user->username;
-            $list[$i]['userid'] = $userid;
-            $list[$i]['code'] = 0;
-            $list[$i]['error'] = 0;
-            $list[$i]['time'] = 0;
-            $list[$i]['correct'] = 0;
-            
-            $run = $DB->get_records('aspen_run', array('cmid'=>$cmid, 'userid'=>$userid));
-            if($run != NULL){
-               $list[$i]['code'] = $run[count($run) -1]->code;
-               $list[$i]['error'] = $run[count($run) -1]->error;
-               
-               $submit = $DB->get_records('aspen_submit', array('cmid'=>$cmid, 'userid'=>$userid));
-               if($submit != NULL){
-                  $list[$j]['time'] = $submit[count($submit) -1]->time - $run[0]->time;
-                  $list[$j]['correct'] = $submit[count($submit) -1]->correct;
+         $enrolid = (int)$obj->id;
+         $users = $DB->get_records('user_enrolments', array('enrolid' => $enrolid));
+         foreach ($users as $user){
+            $userid = $user->userid;
+            if($userid != 1 && $userid != 2){
+               $username = $DB->get_record('user', array('id'=>$userid),'username')->username;
+               $list[$i]['username'] = $username;
+               $list[$i]['userid'] = $userid;
+               $list[$i]['code'] = 0;
+               $list[$i]['error'] = 0;
+               $list[$i]['time'] = 0;
+               $list[$i]['correct'] = 0;
+               $run = $DB->get_records('aspen_run', array('cmid'=>$cmid, 'userid'=>$userid));
+               if($run != NULL){
+                  $list[$i]['code'] = end($run)->code;
+                  $list[$i]['error'] = end($run)->error;
+                  $submit = $DB->get_records('aspen_submit', array('cmid'=>$cmid, 'userid'=>$userid));
+                  if($submit != NULL){
+                     $list[$i]['time'] = end($submit)->time - reset($run)->time;
+                     $list[$i]['correct'] = end($submit)->correct;
+                  }
                }
-            }
             
-            $i++;
+               $i++;
+            }
          }
       }
 
@@ -245,7 +247,7 @@ class local_exfunctions_external extends external_api {
 
       self::validate_parameters(self::get_run_status_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 
-      $data = $DB->get_records('aspen', array('userid'=>$userid, 'cmid'=>$cmid));
+      $data = $DB->get_records('aspen_run', array('userid'=>$userid, 'cmid'=>$cmid));
       $list = array();
       $i = 0;
       foreach ($data as $datum){
@@ -294,29 +296,30 @@ class local_exfunctions_external extends external_api {
       $data = $DB->get_records('enrol', array('courseid' => $course), '', 'id');
       foreach ($data as $obj){
          $users = $DB->get_records('user_enrolments', array('enrolid' => $obj->id), '', 'userid');
-         foreach ($users as $userid){
-            $user = $DB->get_record('user', array('id'=>$userid->userid),'username');
-            $list[$i]['username'] = $user->username;
+         foreach ($users as $user){
+            $userid = (int)$user->userid;
+            $username = $DB->get_record('user', array('id'=>$userid),'username')->username;
+            $list[$i]['username'] = $username;
             $list[$i]['userid'] = $userid;
             $list[$i]['submission'] = 0;
             $list[$i]['num_of_correct'] = 0;
+            $list[$i]['per_of_correct'] = 0;
    
             $cms = $DB->get_records('course_modules', array('course'=>$course, 'module'=>1));
             foreach ($cms as $cm){
                $submit = $DB->get_records('aspen_submit', array('cmid'=>$cm->id, 'userid'=>$userid));
                if($submit != NULL){
                   $list[$i]['submission'] += 1;
-                  $list[$i]['num_of_correct'] += $submit->correct;
+                  $list[$i]['num_of_correct'] += end($submit)->correct;
                }
             }
             if($list[$i]['submission'] != 0){
-               $list[$i]['per_of_correct'] = (int)round($list[$i]['correct'] / $list[$i]['submission'] * 100);
+               $list[$i]['per_of_correct'] = (int)round($list[$i]['num_of_correct'] / $list[$i]['submission'] * 100);
             }
+            $i++;
          }
-   
-         $i++;
       }
-   
+
       return $list;
    }
    
@@ -343,7 +346,7 @@ class local_exfunctions_external extends external_api {
                         'cmid' => new external_value(PARAM_INT, 'course module id'),
                         'code'   => new external_value(PARAM_INT, 'code'),
                         'codetext'   => new external_value(PARAM_RAW, 'codetext'),
-                        'error' => new external_value(PARAM_RAW, 'error'),
+                        'error' => new external_value(PARAM_INT, 'error'),
                         'errortext'   => new external_value(PARAM_RAW, 'errortext')
                )
       );
@@ -362,6 +365,7 @@ class local_exfunctions_external extends external_api {
       $data->codetext = $codetext;
       $data->error  = $error;
       $data->errortext = $errortext;
+
       $aspen = $DB->insert_record('aspen_run', $data);
    }
 
@@ -384,9 +388,9 @@ class local_exfunctions_external extends external_api {
 
       self::validate_parameters(self::get_head_text_parameters(), array('userid'=>$userid, 'cmid'=>$cmid));
 
-      $data = $DB->get_records('aspen_run', array('userid'=>$userid, 'cmid'=>$cmid), '', 'codetext');
-      
-      return $data[count($data) -1]->codetext;
+      $data = $DB->get_records('aspen_run', array('userid'=>$userid, 'cmid'=>$cmid));
+
+      return end($data)->codetext;
    }
 
    public static function get_head_text_returns() {

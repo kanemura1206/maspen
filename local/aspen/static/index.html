@@ -133,25 +133,34 @@ body {
                   style="display: none;">
                   <i class="icon-ban-circle icon-white"></i> Stop
                </button>
-               <iframe id="status-iframe"
-                  src="%PATH%static/iframe/status.html?cmid=%CMID%&userid=%USERID%"
-                  width="400" height="180" align=right frameborder=0></iframe>
             </p>
+
 
             <div class="span6" align=left>
                <h3>Source</h3>
                <textarea id="editor">System.p("hello, world");</textarea>
-            </div>
-
-            	<iframe id="ranking-iframe" src="%PATH%static/iframe/ranking.html?cmid=%CMID%&userid=%USERID%" width="400" height="230"  align=right frameborder=0></iframe>
-            <div class="span6" align=left>
                <h3>Console</h3>
                <pre id="console">
                   <br><br><br>
                </pre>
-               <!--		<iframe id="console-iframe" width="450" height="200"></iframe>  -->
             </div>
-            	<iframe id="totalRanking-iframe" src="%PATH%static/iframe/totalRanking.html?cmid=%CMID%&userid=%USERID%" width="400" height="230"  align=right frameborder=0></iframe>
+            <div class="span5" align=right>
+               <h3 align=left>Status</h3>
+               <table class="table table-bordered">
+                  <tr align=center>
+                     <td bgcolor="#cccccc">Due date</td>
+                     <td id="duedate"></td>
+                  </tr>
+                  <tr align=center>
+                     <td bgcolor="#cccccc">Last submission</td>
+                     <td id="timemodified"></td>
+                  </tr>
+               </table>
+               <h3 align=left>Ranking</h3>
+               <div id="ranking" align=right></div>
+               <h3 align=left>Total Ranking</h3>
+               <div id="totalRanking"></div>
+            </div>
 
          </div>
       </div>
@@ -186,7 +195,11 @@ body {
 			var USERID = "%USERID%";
 			var ROOTURL = "%ROOTURL%";
    </script>
+
    <script src="%PATH%static/js/main.js"></script>
+   <script src="%PATH%static/js/ranking.js"></script>
+   <script src="%PATH%static/js/totalRanking.js"></script>
+   <script src="%PATH%static/js/status.js"></script>
 
    <script>
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];

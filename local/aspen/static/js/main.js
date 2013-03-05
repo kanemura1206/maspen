@@ -73,6 +73,7 @@ $(function() {
                   errortext: JSON.stringify({"error": error, "warning": warning})
                },
                success: function(res) {
+                  drawRanking();
                }
             });
 
@@ -197,42 +198,32 @@ $(function() {
                }
                else{
                   document.getElementById("button-stop").style.display = "none";
-      $.ajax({
-         type: "GET",
-         url: ROOTURL + "webservice/rest/server.php",
-         dataType: "text",
-         data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-            wsfunction: "local_exfunctions_submit_assignment",
-            moodlewsrestformat: "json",
-            cmid: CMID,
-            userid: USERID,
-            text: myCodeMirror.getValue(),
-            output: JSON.stringify(result)
-         },
-         success: function(res) {
-            prettyPrint();
-         }
-      });
-      document.getElementById("status-iframe").contentWindow.location.reload();
+                  $.ajax({
+                     type: "GET",
+                     url: ROOTURL + "webservice/rest/server.php",
+                     dataType: "text",
+                     data: {
+                        wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                        wsfunction: "local_exfunctions_submit_assignment",
+                        moodlewsrestformat: "json",
+                        cmid: CMID,
+                        userid: USERID,
+                        text: myCodeMirror.getValue(),
+                        output: JSON.stringify(result)
+                     },
+                     success: function(res) {
+                        drawStatus();
+                        drawRanking();
+                        drawTotalRanking();
+                        prettyPrint();
+                     }
+                  });
                }
             }
          }
       });
 
    });
-
-   function parse_time(ts) {
-      var d = new Date( ts * 1000 );
-      var year  = d.getFullYear();
-      var month = d.getMonth() + 1;
-      month = ( month   < 10 ) ? '0' + month   : month;
-      var day  = ( d.getDate()    < 10 ) ? '0' + d.getDate()    : d.getDate();
-      var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
-      var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-      var sec  = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-      return year + '年' + month + '月' + day + '日 ' + hour + '時' + min + '分' + sec + '秒';
-   }
 
    (function() {
       $.ajax({
@@ -247,7 +238,7 @@ $(function() {
             cmid: CMID,
          },
          success: function(res) {
-            if(res != null){
+            if(res != '" "'){
                myCodeMirror.setValue(jQuery.parseJSON(res));
             }
          }
