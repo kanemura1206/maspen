@@ -31,7 +31,7 @@ $(function() {
          success: function(res) { 
             var array = res.split(/\r\n|\r|\n/);
             var i, str = "", error = [], warning = [];
-            var text = "function p(text){postMessage(text)}\n";
+            var text = "var console = { log: function(text){ postMessage(text); }, };\n";
             for(i = 0; i < array.length; i++){
                if(array[i].substring(0, 4) == " - ("){
                   array[i] = array[i].replace(/js\.......:/g, 'at line ');
@@ -62,7 +62,7 @@ $(function() {
                url: ROOTURL + "webservice/rest/server.php",
                dataType: "text",
                data: {
-                  wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                  wstoken: MOODLE_TOKEN,
                   wsfunction: "local_exfunctions_set_run_status",
                   moodlewsrestformat: "json",
                   userid: USERID,
@@ -141,11 +141,11 @@ $(function() {
 
    $("#button-submit").click(function() {
       var jsonData = $.ajax({
-         url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+         url: MOODLE_SERVER_PHP_URL,
          dataType: "json",
          async: false,
          data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wstoken: MOODLE_TOKEN,
             wsfunction: "local_exfunctions_view_assignment",
             moodlewsrestformat: "json",
             cmid: CMID,
@@ -153,6 +153,7 @@ $(function() {
          }
       }).responseText;
       var obj = jQuery.parseJSON(jsonData);
+      if(!obj) return;
       if(Math.round(new Date().getTime() / 1000) < obj.duedate){
          $("#submit-text").text(myCodeMirror.getValue());
          $("#modal-submit").modal("show");
@@ -203,7 +204,7 @@ $(function() {
                      url: ROOTURL + "webservice/rest/server.php",
                      dataType: "text",
                      data: {
-                        wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                        wstoken: MOODLE_TOKEN,
                         wsfunction: "local_exfunctions_submit_assignment",
                         moodlewsrestformat: "json",
                         cmid: CMID,
@@ -231,14 +232,14 @@ $(function() {
          url: ROOTURL + "webservice/rest/server.php",
          dataType: "text",
          data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wstoken: MOODLE_TOKEN,
             wsfunction: "local_exfunctions_get_head_text",
             moodlewsrestformat: "json",
             userid: USERID,
             cmid: CMID,
          },
          success: function(res) {
-            if(res != '" "'){
+            if(res != '" "' && res != ''){
                myCodeMirror.setValue(jQuery.parseJSON(res));
             }
          }
@@ -250,7 +251,7 @@ $(function() {
             url: ROOTURL + "webservice/rest/server.php",
             dataType: "text",
             data: {
-               wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+               wstoken: MOODLE_TOKEN,
                wsfunction: "local_exfunctions_init_aspen",
                moodlewsrestformat: "json",
                userid: USERID,

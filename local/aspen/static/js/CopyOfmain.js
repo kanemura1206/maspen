@@ -62,7 +62,7 @@ $(function() {
                url: ROOTURL + "webservice/rest/server.php",
                dataType: "text",
                data: {
-                  wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                  wstoken: MOODLE_TOKEN,
                   wsfunction: "local_exfunctions_set_run_status",
                   moodlewsrestformat: "json",
                   userid: USERID,
@@ -139,11 +139,11 @@ $(function() {
 
    $("#button-submit").click(function() {
       var jsonData = $.ajax({
-         url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+         url: MOODLE_SERVER_PHP_URL,
          dataType: "json",
          async: false,
          data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wstoken: MOODLE_TOKEN,
             wsfunction: "local_exfunctions_view_assignment",
             moodlewsrestformat: "json",
             cmid: CMID,
@@ -201,7 +201,7 @@ $(function() {
          url: ROOTURL + "webservice/rest/server.php",
          dataType: "text",
          data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wstoken: MOODLE_TOKEN,
             wsfunction: "local_exfunctions_submit_assignment",
             moodlewsrestformat: "json",
             cmid: CMID,
@@ -239,7 +239,7 @@ $(function() {
          url: ROOTURL + "webservice/rest/server.php",
          dataType: "text",
          data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+            wstoken: MOODLE_TOKEN,
             wsfunction: "local_exfunctions_get_head_text",
             moodlewsrestformat: "json",
             userid: USERID,
@@ -258,7 +258,7 @@ $(function() {
             url: ROOTURL + "webservice/rest/server.php",
             dataType: "text",
             data: {
-               wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+               wstoken: MOODLE_TOKEN,
                wsfunction: "local_exfunctions_init_aspen",
                moodlewsrestformat: "json",
                userid: USERID,

@@ -21,8 +21,6 @@ import("JavaScript.String");
 	return ret;
 }
 
-//const BASE_PATH="/var/www/html/maspen/local/aspen/static";
-
 class Template {
 	File file;
 	String[] params;
@@ -36,7 +34,7 @@ class Template {
 	}
 
 	@Public @Static Template getTemplate(String templateName) {
-		String BASE_PATH="/var/www/html/maspen/local/aspen/static";
+		String BASE_PATH="/var/www/aspen2/local/aspen/static";
 		return new Template(new File(BASE_PATH + "/" + templateName, "r"));
 	}
 

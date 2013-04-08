@@ -18,11 +18,11 @@
 
     function drawStatus() {
      var jsonData = $.ajax({
-      	url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+      	url: MOODLE_SERVER_PHP_URL,
       	dataType: "json",
       	async: false,
       	data: {
-      		wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+      		wstoken: MOODLE_TOKEN,
       		wsfunction: "local_exfunctions_view_assignment",
       		moodlewsrestformat: "json",
       		cmid: CMID,
@@ -30,6 +30,7 @@
       	}
       }).responseText;
       var obj = jQuery.parseJSON(jsonData);
+      if(!obj || !obj.status) return;
       $("#status").text(obj.status);
       $("#duedate").text(parse_time_status(obj.duedate));
       if(obj.timemodified == null){

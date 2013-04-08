@@ -1,4 +1,4 @@
-#!/usr/local/bin/minikonoha
+#!/usr/local/bin/konoha
 
 import("dscript.subproc");
 import("JavaScript.Array");
@@ -22,12 +22,12 @@ void main() {
  	sp = new SubProc("/usr/local/bin/konoha");
  	sp.setArgumentList(["-ISyntax.GlobalVariable", "-IType.Float", "-IJavaScript.String", "-IJavaScript.Array", "-ISyntax.CStyleWhile", "-c", filename]);
 	//sp.setArgumentList(["-c", filename]);
- 	//sp.setArgumentList(["-MJavaScript", "-Icstyle", "-IJavaStyle.Object", "-ISyntax.JavaStyleClass", "-IType.StaticVar", "-ISyntax.GlobalVariable", "-IMiniKonoha.NameSpace", "-IJavaScript.String", "-IJavaScript.Regexp", "-IJavaScript.Array", "-IMiniKonoha.Map", "-Ikonoha.iterator", filename]);
-	stderr.println("compile start konoha -MJavaScript " + filename);
+ 	//sp.setArgumentList(["-MFuelJS", "-Icstyle", "-IJavaStyle.Object", "-ISyntax.JavaStyleClass", "-IType.StaticVar", "-ISyntax.GlobalVariable", "-IMiniKonoha.NameSpace", "-IJavaScript.String", "-IJavaScript.Regexp", "-IJavaScript.Array", "-IMiniKonoha.Map", "-Ikonoha.iterator", filename]);
+	stderr.println("compile start konoha -MFuelJS " + filename);
  	sp.bg();
  	stdout.println("Content-Type: application/javascript; charset=utf-8\n");
  	stdout.println(sp.communicate("")[0]);
-	stderr.println("compile end konoha -MJavaScript " + filename);
+	stderr.println("compile end konoha -MFuelJS " + filename);
 }
 
 main();

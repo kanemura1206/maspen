@@ -25,17 +25,17 @@
         data.addColumn('number', ' ');
 
         var jsonData = $.ajax({
-           url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
+           url: MOODLE_SERVER_PHP_URL,
            dataType: "json",
            async: false,
            data: {
-                wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
+                wstoken: MOODLE_TOKEN,
                 wsfunction: "local_exfunctions_get_runking",
                 moodlewsrestformat: "json",
                 cmid: CMID,
            }
         }).responseText;
-        var obj = jQuery.parseJSON(jsonData);
+        var obj = jQuery.parseJSON(jsonData) || [];
 	var array = [];
 	var i = 0, row = -1;
 	while(i < obj.length){
