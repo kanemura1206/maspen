@@ -239,8 +239,9 @@ $(function() {
             cmid: CMID,
          },
          success: function(res) {
-            if(res != '" "' && res != ''){
-               myCodeMirror.setValue(jQuery.parseJSON(res));
+            var parsed = jQuery.parseJSON(res);
+            if(parsed instanceof String){
+               myCodeMirror.setValue(parsed);
             }
          }
       });

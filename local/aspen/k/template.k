@@ -34,8 +34,7 @@ class Template {
 	}
 
 	@Public @Static Template getTemplate(String templateName) {
-		String BASE_PATH="/var/www/aspen2/local/aspen/static";
-		return new Template(new File(BASE_PATH + "/" + templateName, "r"));
+		return new Template(new File(global.CONFIG_BASE_PATH + "/" + templateName, "r"));
 	}
 
 	@Public void set(String key, String val) {

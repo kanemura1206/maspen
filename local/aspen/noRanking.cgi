@@ -2,6 +2,7 @@
 
 import("posix.process");
 
+load("./k/config.k");
 load("./k/template.k");
 load("./k/CGI.k");
 
@@ -10,8 +11,8 @@ void main() {
 	CGI cgi = new CGI(System.getenv("QUERY_STRING"));
 	t.set("CMID", cgi.getParam("cmid"));
 	t.set("USERID", cgi.getParam("userid"));
-	t.set("PATH", "http://ec2-54-244-187-206.us-west-2.compute.amazonaws.com/aspen2/local/aspen/");
-	t.set("ROOTURL", "http://ec2-54-244-187-206.us-west-2.compute.amazonaws.com/aspen2/");
+	t.set("PATH", global.CONFIG_ASPEN_ROOT_URL);
+	t.set("ROOTURL", global.CONFIG_MOODLE_ROOT_URL);
 	t.set("TITLE", "Konoha");
 	t.set("COPY", "Konoha Project");
 	t.set("URL", System.getenv("QUERY_STRING"));
