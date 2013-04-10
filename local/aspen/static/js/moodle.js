@@ -4,7 +4,6 @@ moodle.callAPI = function(name, type, data, callback, async){
     data = data || {};
     data.wstoken = MOODLE_TOKEN;
     data.wsfunction = "local_exfunctions_" + name;
-    data.userid = USERID;
     data.cmid = CMID;
     data.moodlewsrestformat = "json";
     return $.ajax({
@@ -23,6 +22,7 @@ moodle.setRunStatusAsync = function(codelinenum, codetext, errornum, errortext, 
         codetext: codetext,
         error: errornum,
         errortext: errortext,
+        userid: USERID,
     }, callback);
 };
 
@@ -30,11 +30,12 @@ moodle.submitAssignmentAsync = function(codetext, result, callback){
     moodle.callAPI("submit_assignment", "text", {
         text: codetext,
         output: JSON.stringify(result),
+        userid: USERID,
     }, callback);
 };
 
 moodle.viewAssignment = function(){
-    var jsonData = moodle.callAPI("view_assignment", "json", null, null, false).responseText;
+    var jsonData = moodle.callAPI("view_assignment", "json", { userid: USERID }, null, false).responseText;
     return jQuery.parseJSON(jsonData);
 }
 
@@ -53,10 +54,10 @@ moodle.getTotalRanking = function(){
 }
 
 moodle.initAsync = function(){
-    moodle.callAPI("init_aspen", "json");
+    moodle.callAPI("init_aspen", "json", { userid: USERID });
 };
 
 moodle.getHeadTextAsync = function(callback){
-    moodle.callAPI("get_head_text", "json", null, callback);
+    moodle.callAPI("get_head_text", "json", { userid: USERID }, callback);
 }
 
