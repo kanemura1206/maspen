@@ -12,19 +12,8 @@ function drawTotalRanking() {
     data.addColumn('number', 'Number of correct answers');
     data.addColumn('string', 'Percentage of correct answers');
 
-    var jsonData = $.ajax({
-        url: MOODLE_SERVER_PHP_URL,
-        dataType: "json",
-        async: false,
-        data: {
-            wstoken: MOODLE_TOKEN,
-            wsfunction: "local_exfunctions_get_total_runking",
-            moodlewsrestformat: "json",
-            cmid: CMID,
-        }
-    }).responseText;
-    var obj = jQuery.parseJSON(jsonData);
-    if(obj instanceof Array){
+    var obj = moodle.getTotalRanking();
+    if(obj.length > 0){
         var array = [];
         var i = 0, row = -1;
         while(i < obj.length){

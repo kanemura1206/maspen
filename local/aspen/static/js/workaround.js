@@ -3,8 +3,8 @@ onmessage = function(event) {
         var block = event.data.replace(/^.*{/m, '{');
         var code  = new Function(block);
         if(code() == true){
-		postMessage("uhai42ludkxRdvjmfb");
-	}
+            postMessage("uhai42ludkxRdvjmfb");
+        }
     }catch(e){
         throw e;
     }
