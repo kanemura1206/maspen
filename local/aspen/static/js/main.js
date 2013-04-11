@@ -1,265 +1,195 @@
+
+function countBlankLine(str){
+    var blank = 0;
+    jQuery.each(str.split(/\r\n|\r|\n/), function(i, v){
+        if(v.trim() == ""){ blank++; }
+    });
+    return blank;
+}
+
+var aspen = {}
+aspen.k2jsAsync = function(src, callback){
+    function processK2JSResult(res){
+        var array = res.split(/\r\n|\r|\n/);
+        var i, str = "", error = [], warning = [], eline = [];
+        var text = "var console = { log: function(text){ postMessage(text); }, };\n";
+        for(i = 0; i < array.length; i++){
+            if(array[i].substring(0, 4) == " - ("){
+                array[i] = array[i].replace(/js\.......:/g, 'at line ');
+                var obj = array[i].split(/[()]/);
+                if(obj[1] == "error"){
+                    error.push("(" + obj[3]  + ")" + obj[4]);
+                }
+                else if(obj[1] == "warning"){
+                    warning.push("(" + obj[3] + ")" + obj[4]);
+                }
+                str += array[i] + "\n";
+                eline.push(obj[3].substring(8) - 1);
+            }
+            else{
+                text += array[i] + "\n";
+            }
+        }
+        return {src: text, errors: error, warnings: warning, errorLines: eline, result: res};
+    }
+    $.ajax({
+        type: "GET",
+        url: PATH + "k/k2js.cgi",
+        dataType: "text",
+        data: encodeURI(src),
+        success: function(res) { callback(processK2JSResult(res)); },
+    });
+};
+
+function dispatch(worker, src, callback){
+    var work = "function(){\n" + src + "\nreturn true;\n}";
+    var startTime = new Date();
+    worker.onmessage = callback;
+    worker.postMessage(work.toString());
+}
+
 $(function() {
-   /* editor */
-   var myCodeMirror = CodeMirror(function(elt) {
-      $("#editor").replaceWith(elt);
-   }, {
-      value: $("#editor").val(),
-      mode: "text/x-konoha",
-      lineNumbers: true,
-      onCursorActivity: function(){
-         myCodeMirror.setLineClass(myCodeMirror.getCursor().line, null);
-      }
+    /* editor */
+    var myCodeMirror = CodeMirror(function(elt) {
+        $("#editor").replaceWith(elt);
+    }, {
+        value: $("#editor").val(),
+        mode: "text/x-konoha",
+        lineNumbers: true,
+        onCursorActivity: function(){
+            myCodeMirror.setLineClass(myCodeMirror.getCursor().line, null);
+        },
+    });
 
-   });
+    /* button actions */
+    $("#button-run").click(function() {
+        $("#console").text("\n\n\n");
+        var worker = new Worker(PATH + 'static/js/workaround.js');
+        $("#button-stop").show();
 
-   /* button actions */
-   $("#button-run").click(function() {
-      $("#console").text("\n\n\n");
-      var worker = new Worker(PATH + 'static/js/workaround.js');
-      document.getElementById("button-stop").style.display = "";
-
-      $('#button-stop').click(function() {
-         document.getElementById("button-stop").style.display = "none";
-         worker.terminate();
-      });
-
-      $.ajax({
-         type: "GET",
-         url: PATH + "k/k2js.cgi",
-         dataType: "text",
-         data: encodeURI(myCodeMirror.getValue()),
-         success: function(res) { 
-            var array = res.split(/\r\n|\r|\n/);
-            var i, str = "", error = [], warning = [];
-            var text = "function p(text){postMessage(text)}\n";
-            for(i = 0; i < array.length; i++){
-               if(array[i].substring(0, 4) == " - ("){
-                  array[i] = array[i].replace(/js\.......:/g, 'at line ');
-                  var obj = array[i].split(/[()]/);
-                  if(obj[1] == "error"){
-                     error.push("(" + obj[3]  + ")" + obj[4]);
-                  }
-                  else if(obj[1] == "warning"){
-                     warning.push("(" + obj[3] + ")" + obj[4]);
-                  }
-                  str += array[i] + "\n";
-                  myCodeMirror.setLineClass(obj[3].substring(8)-1, "errorLine");
-               }
-               else{
-                  text += array[i] + "\n";
-               }	
-            }
-
-            var blank = 0;
-            array = myCodeMirror.getValue().split(/\r\n|\r|\n/);
-            for(i = 0; i < array.length; i++){
-               if(array[i].trim() == ""){
-                  blank++;
-               }
-            }
-            $.ajax({
-               type: "GET",
-               url: ROOTURL + "webservice/rest/server.php",
-               dataType: "text",
-               data: {
-                  wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-                  wsfunction: "local_exfunctions_set_run_status",
-                  moodlewsrestformat: "json",
-                  userid: USERID,
-                  cmid: CMID,
-                  code: myCodeMirror.lineCount() - blank,
-                  codetext: myCodeMirror.getValue(),
-                  error: error.length + warning.length,
-                  errortext: JSON.stringify({"error": error, "warning": warning})
-               },
-               success: function(res) {
-                  drawRanking();
-               }
+        $('#button-stop').click(function() {
+            $("#button-stop").hide();
+            worker.terminate();
+        });
+        
+        var codetext = myCodeMirror.getValue();
+        aspen.k2jsAsync(codetext, function(result) {
+            jQuery.each(result.errorLines, function(i, v){
+                myCodeMirror.setLineClass(v, "errorLine");
             });
-
-            var work = "function(){\n" + text + "\nreturn true;\n}";
+            var blank = countBlankLine(myCodeMirror.getValue());
+            var code = myCodeMirror.lineCount() - blank;
+            var error = result.errors.length + result.warnings.length;
+            var errortext = JSON.stringify({"error": result.errors, "warning": result.warning});
+            moodle.setRunStatusAsync(code, codetext, error, errortext, function(res) {
+                drawRanking();
+            });
+            
+            var str = "";
             var startTime = new Date();
-            worker.postMessage(work.toString());
             worker.onmessage = function(event){
-               if(event.data != "uhai42ludkxRdvjmfb"){
-                  str += event.data + "\n";
-                  $("#console").text(str);
-               }
-               else{
-                  document.getElementById("button-stop").style.display = "none";
-                  var endTime = new Date();
-                  var msec = endTime - startTime;
-                  str += '\n   実行時間: ' + msec + 'ミリ秒';
-                  $("#console").text(str);
-               }
+                if(event.data != "uhai42ludkxRdvjmfb"){
+                    str += event.data + "\n";
+                    $("#console").text(str);
+                }
+                else{
+                    document.getElementById("button-stop").style.display = "none";
+                    var endTime = new Date();
+                    var msec = endTime - startTime;
+                    str += '\n   実行時間: ' + msec + 'ミリ秒';
+                    $("#console").text(str);
+                }
+            };
+            worker.postMessage("function(){\n" + result.src + "\nreturn true;\n}");
+        });
+
+        sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+        prettyPrint();
+    });
+
+    $("#button-compile").click(function() {
+        var iframedoc;
+        function onLoad() {
+            var iframe = document.getElementById("console-iframe");
+            if (document.all) {
+                iframedoc = iframe.contentWindow.document;
             }
-         }
-      });
-
-      sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-      prettyPrint();
-   });
-
-   $("#button-compile").click(function() {
-      var iframedoc;
-      function onLoad() {
-         var iframe = document.getElementById("console-iframe");
-         if (document.all) {
-            iframedoc = iframe.contentWindow.document;
-         } else {
-            iframedoc = iframe.contentDocument;
-         }
-
-         iframedoc.body.innerHTML = "";
-
-         iframedoc.writeln("<body></body>");
-
-         $.ajax({
-            type: "GET",
-            url: PATH + "k/k2jsC.cgi",
-            dataType: "text",
-            data: encodeURI(myCodeMirror.getValue()),
-            success: function(res) {
-               var i;
-               var array = res.split(/\r\n|\r|\n/);
-               for(i = 0; i < array.length; i++){
-                  if(array[i] != "" && array[i].substring(0, 6) != " - (js"){
-                     var obj = array[i].split(/[()]/);
-                     myCodeMirror.setLineClass(obj[3].substring(10)-1, "errorLine");
-                  }
-               }
-               res = res.replace(/\r\n|\r|\n/g, "<br>").replace(/js\.......:/g, 'at line ');
-               iframedoc.body.innerHTML += res;
-            }
-         });
-      }
-
-      window.onload = onLoad();
-      sessionStorage.setItem("previousValue", myCodeMirror.getValue());
-      prettyPrint();
-   });
-
-   $("#button-submit").click(function() {
-      var jsonData = $.ajax({
-         url: "http://konoha.ubicg.ynu.ac.jp/maspen/webservice/rest/server.php",
-         dataType: "json",
-         async: false,
-         data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-            wsfunction: "local_exfunctions_view_assignment",
-            moodlewsrestformat: "json",
-            cmid: CMID,
-            userid: USERID
-         }
-      }).responseText;
-      var obj = jQuery.parseJSON(jsonData);
-      if(Math.round(new Date().getTime() / 1000) < obj.duedate){
-         $("#submit-text").text(myCodeMirror.getValue());
-         $("#modal-submit").modal("show");
-      }
-      else{
-         $("#modal-submit-over").modal("show");
-      }
-      prettyPrint();
-   });
-
-   $("#button-submit-yes").click(function() {
-      var result = new Array();
-      
-      var worker = new Worker(PATH + 'static/js/workaround.js');
-      document.getElementById("button-stop").style.display = "";
-
-      $('#button-stop').click(function() {
-         document.getElementById("button-stop").style.display = "none";
-         worker.terminate();
-      });
-      
-      $.ajax({
-         type: "GET",
-         url: PATH + "k/k2js.cgi",
-         dataType: "text",
-         data: encodeURI(myCodeMirror.getValue()),
-         success: function(res) { 
-            var array = res.split(/\r\n|\r|\n/);
-            var i, str = "", error = [], warning = [];
-            var text = "function p(text){postMessage(text)}\n";
-            for(i = 0; i < array.length; i++){
-               if(array[i].substring(0, 4) != " - ("){
-                  text += array[i] + "\n";
-               }	
+            else {
+                iframedoc = iframe.contentDocument;
             }
 
-            var work = "function(){\n" + text + "\nreturn true;\n}";
-            var startTime = new Date();
-            worker.postMessage(work.toString());
+            iframedoc.body.innerHTML = "";
+            iframedoc.writeln("<body></body>");
+
+            aspen.k2jsAsync(myCodeMirror.getValue(), function(result) {
+                jQuery.each(result.errorLines, function(i, v){
+                    myCodeMirror.setLineClass(v, "errorLine");
+                });
+                var res = result.replace(/\r\n|\r|\n/g, "<br>").replace(/js\.......:/g, 'at line ');
+                iframedoc.body.innerHTML = res;
+            });
+        }
+        window.onload = onLoad();
+        sessionStorage.setItem("previousValue", myCodeMirror.getValue());
+        prettyPrint();
+    });
+
+    $("#button-submit").click(function() {
+        var obj = moodle.viewAssignment();
+        if(!obj) return;
+        if(Math.round(new Date().getTime() / 1000) < obj.duedate){
+            $("#submit-text").text(myCodeMirror.getValue());
+            $("#modal-submit").modal("show");
+        }
+        else{
+            $("#modal-submit-over").modal("show");
+        }
+        prettyPrint();
+    });
+    
+    $("#button-submit-yes").click(function() {
+        var output = [];
+        
+        var worker = new Worker(PATH + 'static/js/workaround.js');
+        $("#button-stop").show();
+    
+        $('#button-stop').click(function() {
+            $("#button-stop").hide();
+            worker.terminate();
+        });
+        
+        var codetext = myCodeMirror.getValue();
+        aspen.k2jsAsync(codetext, function(result) {
+            jQuery.each(result.errorLines, function(i, v){
+                myCodeMirror.setLineClass(v, "errorLine");
+            });
+            
             worker.onmessage = function(event){
-               if(event.data != "uhai42ludkxRdvjmfb"){
-                  result.push(event.data);
-               }
-               else{
-                  document.getElementById("button-stop").style.display = "none";
-                  $.ajax({
-                     type: "GET",
-                     url: ROOTURL + "webservice/rest/server.php",
-                     dataType: "text",
-                     data: {
-                        wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-                        wsfunction: "local_exfunctions_submit_assignment",
-                        moodlewsrestformat: "json",
-                        cmid: CMID,
-                        userid: USERID,
-                        text: myCodeMirror.getValue(),
-                        output: JSON.stringify(result)
-                     },
-                     success: function(res) {
+                if(event.data != "uhai42ludkxRdvjmfb"){
+                    output.push(event.data);
+                }
+                else{
+                    $("#button-stop").hide();
+                    moodle.submitAssignmentAsync(codetext, output, function(res) {
                         drawStatus();
                         drawRanking();
                         drawTotalRanking();
                         prettyPrint();
-                     }
-                  });
-               }
+                    });
+                }
             }
-         }
-      });
+            worker.postMessage("function(){\n" + result.src + "\nreturn true;\n}");
+        });
+    });
+    
+    moodle.getHeadTextAsync(function(res) {
+        if(res instanceof String){
+            myCodeMirror.setValue(res);
+        }
+    });
 
-   });
-
-   (function() {
-      $.ajax({
-         type: "GET",
-         url: ROOTURL + "webservice/rest/server.php",
-         dataType: "text",
-         data: {
-            wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-            wsfunction: "local_exfunctions_get_head_text",
-            moodlewsrestformat: "json",
-            userid: USERID,
-            cmid: CMID,
-         },
-         success: function(res) {
-            if(res != '" "'){
-               myCodeMirror.setValue(jQuery.parseJSON(res));
-            }
-         }
-      });
-
-      if(USERID != 2){
-         $.ajax({
-            type: "GET",
-            url: ROOTURL + "webservice/rest/server.php",
-            dataType: "text",
-            data: {
-               wstoken: "2d1a05efd36f0751a6a9fa7c6e3179e7",
-               wsfunction: "local_exfunctions_init_aspen",
-               moodlewsrestformat: "json",
-               userid: USERID,
-               cmid: CMID,
-            },
-            success: function(res) {
-            }
-         });
-      }
-   })();
-
+    if(USERID != 2){
+        moodle.initAsync();
+    }
 });
+

@@ -1,4 +1,4 @@
-#!/usr/local/bin/minikonoha
+#!/usr/local/bin/konoha
 
 import("dscript.subproc");
 import("JavaScript.Array");
@@ -12,22 +12,20 @@ load("./decodeURI.k");
 void main() {
 	SubProc sp = new SubProc("/bin/mktemp");
 	sp.setArgumentList(["-q", "/tmp/js.XXXXXX"]);
- 	sp.bg();
+ 	sp.fg();
  	String filename = sp.communicate("")[0].trim();
  	FILE tmp = new FILE(filename, "w");
 	String input = decodeURI(System.getenv("QUERY_STRING").trim());
  	tmp.print(input);
  	tmp.flush();
  	tmp.close();
- 	sp = new SubProc("/usr/local/bin/konoha");
-	//sp.setArgumentList(["-c", filename]);
- 	//sp.setArgumentList(["-MJavaScript", "-Icstyle", "-IJavaStyle.Object", "-ISyntax.JavaStyleClass", "-IType.StaticVar", "-ISyntax.GlobalVariable", "-IMiniKonoha.NameSpace", "-IJavaScript.String", "-IJavaScript.Regexp", "-IJavaScript.Array", "-IMiniKonoha.Map", "-Ikonoha.iterator", filename]);
- 	sp.setArgumentList(["-MJavaScript", "-ISyntax.GlobalVariable", "-IType.Float", "-IJavaScript.String", "-IJavaScript.Array", "-ISyntax.CStyleWhile", filename]);
-	stderr.println("start konoha -MJavaScript " + filename);
- 	sp.bg();
- 	stdout.println("Content-Type: application/javascript; charset=utf-8\n");
+ 	
+	stdout.println("Content-Type: application/javascript; charset=utf-8\n");
+ 	
+	sp = new SubProc("/usr/local/bin/konoha");
+ 	sp.setArgumentList(["-MLeafJS", "-ISyntax.GlobalVariable", "-IType.Float", "-IJavaScript.String", "-IJavaScript.Array", "-ISyntax.CStyleWhile", filename]);
+ 	sp.fg();
  	stdout.println(sp.communicate("")[0]);
-	stderr.println("end konoha -MJavaScript " + filename);
 }
 
 main();
